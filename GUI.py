@@ -9,6 +9,7 @@ from PyQt5.Qt import *
 from PyQt5.QtMultimedia import QSound
 from PyQt5.QtCore import QTimer, QUrl, Qt
 import qtawesome as qta
+
 from version import *
 from speech_to_text import speech_to_text
 
@@ -260,12 +261,15 @@ class SoundRecorder(QMainWindow):
             if selected_file_name:
                 selected_file_name.setText(self.speech_to_text_window.selected_file_name)
 
-    async def start_transcription(self):
+    def start_transcription(self):
         transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
-        transcript_area.setText("Transcribing...")
+
+        if self.speech_to_text_window.selected_file_name[-4:] != ".wav":
+            transcript_area.setText("Wrong file type. Please select another .wav file.")
+            return
 
         try:
-            transcript = await speech_to_text(self.speech_to_text_window.selected_file)
+            transcript = speech_to_text(self.speech_to_text_window.selected_file)
             transcript_area.setText(transcript)
         except Exception as e:
             transcript_area.setText("Error occurred during transcription: " + str(e))
