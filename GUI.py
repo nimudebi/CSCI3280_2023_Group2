@@ -10,6 +10,7 @@ from PyQt5.QtMultimedia import QSound
 from PyQt5.QtCore import QTimer, QUrl, Qt
 import qtawesome as qta
 from version import *
+from speech_to_text import speech_to_text
 
 
 def center_display(w):
@@ -99,6 +100,16 @@ class SoundRecorder(QMainWindow):
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
         self.ui.horizontalSlider.sliderReleased.connect(self.playing_adjusted)
+
+        # added by yitian
+        # a new button to the speech-to-text window
+        self.speech_to_text_window_btn = QPushButton(self)
+        self.speech_to_text_window_btn.setGeometry(self.width() // 2 - 50, self.height() // 2 - 25, 100, 50)
+        self.speech_to_text_window_btn.setText("New Window")
+        self.speech_to_text_window_btn.clicked.connect(self.open_speech_to_text_window)
+
+        # attributes of speech-to-text window
+        self.speech_to_text_window = None
 
         # Todo 连到播放函数中
         self.playing = False
@@ -197,7 +208,67 @@ class SoundRecorder(QMainWindow):
                 self.move(mouse_event.globalPos() - self.m_Position)
                 mouse_event.accept()
 
+    # added by yitian
+    # open a new speech-to-text window
+    def open_speech_to_text_window(self):
+        if self.speech_to_text_window is None:
+            self.speech_to_text_window = QWidget()
 
+            self.speech_to_text_window.selected_file_name = ""
+            self.speech_to_text_window.selected_file = None
+            self.speech_to_text_window.transcript = ""
+
+            # select file button
+            select_file_button = QPushButton(self.speech_to_text_window)
+            select_file_button.setText("Select File")
+            select_file_button.setGeometry(325, 30, 100, 30)
+            select_file_button.clicked.connect(self.select_file)
+
+            # selected file name
+            selected_file_name = QLineEdit(self.speech_to_text_window)
+            selected_file_name.setGeometry(50, 30, 250, 30)
+            selected_file_name.setReadOnly(True)
+            selected_file_name.setObjectName("selected_file_name")
+            selected_file_name.setText(self.speech_to_text_window.selected_file_name)
+
+            # start transcribing button
+            transcribe_button = QPushButton(self.speech_to_text_window)
+            transcribe_button.setText("Transcribe")
+            transcribe_button.setGeometry(450, 30, 100, 30)
+            transcribe_button.clicked.connect(self.start_transcription)
+
+            # transcript area
+            transcript_area = QTextEdit(self.speech_to_text_window)
+            transcript_area.setObjectName("transcript_area")
+            transcript_area.setGeometry(50, 80, 500, 290)
+            transcript_area.setReadOnly(True)
+            transcript_area.setText(self.speech_to_text_window.transcript)
+
+            self.speech_to_text_window.setGeometry(100, 100, 600, 400)
+            self.speech_to_text_window.setWindowTitle("PyQt5")
+            self.speech_to_text_window.show()
+        else:
+            self.speech_to_text_window.show()
+
+    def select_file(self):
+        file_dialog = QFileDialog()
+        file_path, _ = file_dialog.getOpenFileName()
+        if file_path:
+            self.speech_to_text_window.selected_file = file_path
+            self.speech_to_text_window.selected_file_name = os.path.basename(file_path)
+            selected_file_name = self.speech_to_text_window.findChild(QLineEdit, "selected_file_name")
+            if selected_file_name:
+                selected_file_name.setText(self.speech_to_text_window.selected_file_name)
+
+    async def start_transcription(self):
+        transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
+        transcript_area.setText("Transcribing...")
+
+        try:
+            transcript = await speech_to_text(self.speech_to_text_window.selected_file)
+            transcript_area.setText(transcript)
+        except Exception as e:
+            transcript_area.setText("Error occurred during transcription: " + str(e))
 
 
 if __name__ == "__main__":
