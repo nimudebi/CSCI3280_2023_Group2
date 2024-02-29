@@ -106,6 +106,9 @@ class SoundRecorder(QMainWindow):
         self.filename = None
         self.sound_player = QMediaPlayer()
         self.sound_player.setVolume(66)
+        self.ui.horizontalSlider.setDisabled(True)
+        self.ui.horizontalSlider_2.setDisabled(True)
+        self.ui.horizontalSlider_3.setDisabled(True)
         self.ui.horizontalSlider_2.setValue(self.ui.horizontalSlider_2.maximum())
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
@@ -160,11 +163,16 @@ class SoundRecorder(QMainWindow):
             context_menu.exec_(self.ui.listWidget.mapToGlobal(pos))
 
     def update_play_slider(self, position):
+        self.ui.horizontalSlider.setDisabled(False)
+        self.ui.horizontalSlider_2.setDisabled(False)
+        self.ui.horizontalSlider_3.setDisabled(False)
         self.duration = self.sound_player.duration()
         self.ui.horizontalSlider.setRange(0, self.duration)
         self.ui.horizontalSlider_2.setRange(0, self.duration)
         self.ui.horizontalSlider_3.setRange(0, self.duration)
         self.ui.horizontalSlider.setValue(position)
+        self.ui.horizontalSlider_2.setValue(self.duration)
+        self.ui.horizontalSlider_3.setValue(position)
 
     def playing_adjusting(self, position):
         self.sound_player.pause()
