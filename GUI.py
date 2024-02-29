@@ -90,14 +90,19 @@ class SoundRecorder(QMainWindow):
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.ui.pushButton_11.clicked.connect(self.load_audio)
-        self.ui.listWidget.itemDoubleClicked.connect(self.audio_selected)
+        self.ui.listWidget.itemClicked.connect(self.audio_selected)
+        self.ui.listWidget.itemDoubleClicked.connect(self.audio_play)
+
+        self.ui.listWidget.setContextMenuPolicy(3)
+        self.ui.listWidget.customContextMenuRequested.connect(self.show_menu)
         # added by yitian
         # temporarily add this function here
         # a popup or other components may be used to replace it
-        self.ui.listWidget.itemClicked.connect(self.audio_clicked_to_text)
+        # self.ui.listWidget.itemClicked.connect(self.audio_clicked_to_text)
 
         self.timing = QTimer()
-
+        self.filepath = None
+        self.filename = None
         self.sound_player = QMediaPlayer()
         self.sound_player.setVolume(66)
 
@@ -106,20 +111,12 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
         self.ui.horizontalSlider.sliderReleased.connect(self.playing_adjusted)
 
-        # added by yitian
-        # a new button to the speech-to-text window
-        self.speech_to_text_window_btn = QPushButton(self)
-        self.speech_to_text_window_btn.setGeometry(self.width() // 2 - 50, self.height() // 2 - 25, 100, 50)
-        self.speech_to_text_window_btn.setText("New Window")
-        self.speech_to_text_window_btn.clicked.connect(self.open_speech_to_text_window)
-
         # attributes of speech-to-text window
         self.speech_to_text_window = None
 
-        # Todo 连到播放函数中
         self.playing = False
         self.pre_music_index = 0  # 上一首歌的index
-        self.ui.pushButton_5.clicked.connect(self.play_change)  # 暂时是连接到切换图标
+        self.ui.pushButton_5.clicked.connect(self.play_change)
 
         # Todo 连到录音函数中
         self.recording = True
@@ -128,6 +125,18 @@ class SoundRecorder(QMainWindow):
         # Todo 如何实现弹出一个音量条
         # self.ui.pushButton_8.clicked.connect(self.volume_adjust)
         # self.volume_line.valueChanged.connect(self.volume_adjust)  # 拖动音量条改变音量
+
+    def show_menu(self, pos):
+        context_menu = QMenu(self)
+        trim_action = QAction("Audio Trim", self)
+        # TODO：添加trim函数
+        # trim_action.triggered.connect(self.)
+        # context_menu.addAction(trim_action)
+        s2t_action = QAction("Speech to Text", self)
+        s2t_action.triggered.connect(self.open_speech_to_text_window)
+        context_menu.addAction(s2t_action)
+
+        context_menu.exec_(self.ui.listWidget.mapToGlobal(pos))
 
     def update_play_slider(self, position):
         duration = self.sound_player.duration()
@@ -155,6 +164,11 @@ class SoundRecorder(QMainWindow):
                 self.ui.listWidget.addItem(os.path.basename(filename))
 
     def audio_selected(self, item):
+        self.filename = item.text()
+        self.filepath = os.path.join(os.getcwd(), self.filename)
+        media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
+
+    def audio_play(self, item):
         filename = item.text()
         filepath = os.path.join(os.getcwd(), filename)
         media_content = QMediaContent(QUrl.fromLocalFile(filepath))
@@ -216,31 +230,22 @@ class SoundRecorder(QMainWindow):
     # added by yitian
     # temporarily add this function here
     def audio_clicked_to_text(self, item):
-        filename = item.text()
-        filepath = os.path.join(os.getcwd(), filename)
-        self.open_speech_to_text_window(filepath, filename)
+        # filename = item.text()
+        # filepath = os.path.join(os.getcwd(), filename)
+        self.open_speech_to_text_window()
 
     # open a new speech-to-text window
-    def open_speech_to_text_window(self, input_file=None, input_file_name=None):
+    def open_speech_to_text_window(self):
         if self.speech_to_text_window is None:
             self.speech_to_text_window = QWidget()
-
-            self.speech_to_text_window.selected_file_name = input_file_name
-            self.speech_to_text_window.selected_file = input_file
             self.speech_to_text_window.transcript = ""
-
-            # select file button
-            select_file_button = QPushButton(self.speech_to_text_window)
-            select_file_button.setText("Select File")
-            select_file_button.setGeometry(325, 30, 100, 30)
-            select_file_button.clicked.connect(self.select_file)
 
             # selected file name
             selected_file_name = QLineEdit(self.speech_to_text_window)
             selected_file_name.setGeometry(50, 30, 250, 30)
             selected_file_name.setReadOnly(True)
             selected_file_name.setObjectName("selected_file_name")
-            selected_file_name.setText(self.speech_to_text_window.selected_file_name)
+            selected_file_name.setText(self.filename)
 
             # start transcribing button
             transcribe_button = QPushButton(self.speech_to_text_window)
@@ -259,35 +264,17 @@ class SoundRecorder(QMainWindow):
             self.speech_to_text_window.setWindowTitle("Speech to text")
             self.speech_to_text_window.show()
         else:
-            self.speech_to_text_window.selected_file_name = input_file_name
-            self.speech_to_text_window.selected_file = input_file
             self.speech_to_text_window.transcript = ""
-
             selected_file_name = self.speech_to_text_window.findChild(QLineEdit, "selected_file_name")
-            selected_file_name.setText(self.speech_to_text_window.selected_file_name)
+            selected_file_name.setText(self.filename)
             transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
             transcript_area.setText("")
-
             self.speech_to_text_window.show()
-
-    def select_file(self):
-        file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName()
-        if file_path:
-            self.speech_to_text_window.selected_file = file_path
-            self.speech_to_text_window.selected_file_name = os.path.basename(file_path)
-            selected_file_name = self.speech_to_text_window.findChild(QLineEdit, "selected_file_name")
-            if selected_file_name:
-                selected_file_name.setText(self.speech_to_text_window.selected_file_name)
 
     def start_transcription(self):
         transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
-        if self.speech_to_text_window.selected_file_name[-4:] != ".wav":
-            transcript_area.setText("Wrong file type. Please select another .wav file.")
-            return
-
         try:
-            transcript = speech_to_text(self.speech_to_text_window.selected_file)
+            transcript = speech_to_text(self.filepath)
             transcript_area.setText(transcript)
         except Exception as e:
             transcript_area.setText("Error occurred during transcription: " + str(e))
@@ -393,8 +380,8 @@ class RecordingExplorer(QMainWindow):
         layout.addWidget(QLabel(f"This is {title}"))
         layout.addWidget(QPushButton("Button"))
         self.setLayout(layout)
-        
-        
+
+
 class SoundWindow(QWidget):
     def __init__(self,path):
         super(SoundWindow, self).__init__()
@@ -501,9 +488,9 @@ if __name__ == '__main__':
     fileViewer = FileViewer(directory)
     fileViewer.show()
     app.exec_()
-    
-    
-    
+
+
+
 def playVideo(self, filename):
         # 获取文件路径
         filepath = os.path.join(self.directory, filename)
@@ -541,13 +528,13 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     my = qt_view()
     my.show()
-    
-    
-    
 
- 
- 
- 
+
+
+
+
+
+
         handle_rect = self.style().subControlRect(QStyle.CC_Slider, self, QStyle.SC_SliderHandle)
             if handle_rect.contains(event.pos()):
                 # 如果鼠标在滑块上，设置鼠标指针为选中手势
