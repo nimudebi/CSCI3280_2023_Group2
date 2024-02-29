@@ -301,6 +301,9 @@ class SoundRecorder(QMainWindow):
         transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
         try:
             transcript = speech_to_text(self.filepath)
+            if transcript == "":
+                transcript = "Nothing detected. Please upload a clearer audio file."
+
             transcript_area.setText(transcript)
         except Exception as e:
             transcript_area.setText("Error occurred during transcription: " + str(e))
