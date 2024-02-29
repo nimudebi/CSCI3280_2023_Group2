@@ -10,7 +10,13 @@ ZHANG Heqiong	1155191874
 ## Installation
 To use this project, you need to install the following dependencies using pip:
 ```
-pip install PyQt5
+pip install pyqt5
 pip install qtawesome
-pip install assemblyai  
+pip install assemblyai
+pip install pyaudio  
+pip install librosa
+pip install matplotlib  
 ```
+
+## Usage  
+For the usage, please check the file CSCI3280Group2ProjectProgress.pdf submitted on BlackBoard.
