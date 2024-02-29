@@ -123,16 +123,35 @@ class SoundRecorder(QMainWindow):
         # self.volume_line.valueChanged.connect(self.volume_adjust)  # 拖动音量条改变音量
 
     def show_menu(self, pos):
-        context_menu = QMenu(self)
-        trim_action = QAction("Audio Trim", self)
-        # TODO：添加trim函数
-        # trim_action.triggered.connect(self.)
-        # context_menu.addAction(trim_action)
-        s2t_action = QAction("Speech to Text", self)
-        s2t_action.triggered.connect(self.open_speech_to_text_window)
-        context_menu.addAction(s2t_action)
+        item = self.ui.listWidget.itemAt(pos)
+        if item is not None:
+            if item.isSelected():
+                self.filename = item.text()
+                self.filepath = os.path.join(os.getcwd(), self.filename)
 
-        context_menu.exec_(self.ui.listWidget.mapToGlobal(pos))
+            context_menu = QMenu(self)
+            trim_action = QAction("Audio Trim", self)
+            # TODO：添加trim函数
+            # trim_action.triggered.connect(self.)
+            # context_menu.addAction(trim_action)
+            s2t_action = QAction("Speech to Text", self)
+            s2t_action.triggered.connect(self.open_speech_to_text_window)
+            context_menu.addAction(s2t_action)
+            context_menu.setStyleSheet("""
+                QMenu {
+                    background-color: rgb(251, 255, 233);
+                    border: 1px solid #CCCCCC;
+                }
+                QMenu::item {
+                    padding: 6px 20px;
+                }
+                QMenu::item:selected {
+                    background-color: rgba(255, 217, 1,30);
+                    color: rgba(0, 0, 0);
+                }
+            """)
+
+            context_menu.exec_(self.ui.listWidget.mapToGlobal(pos))
 
     def update_play_slider(self, position):
         duration = self.sound_player.duration()
