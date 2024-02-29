@@ -95,10 +95,6 @@ class SoundRecorder(QMainWindow):
 
         self.ui.listWidget.setContextMenuPolicy(3)
         self.ui.listWidget.customContextMenuRequested.connect(self.show_menu)
-        # added by yitian
-        # temporarily add this function here
-        # a popup or other components may be used to replace it
-        # self.ui.listWidget.itemClicked.connect(self.audio_clicked_to_text)
 
         self.timing = QTimer()
         self.filepath = None
@@ -242,7 +238,7 @@ class SoundRecorder(QMainWindow):
 
             # selected file name
             selected_file_name = QLineEdit(self.speech_to_text_window)
-            selected_file_name.setGeometry(50, 30, 250, 30)
+            selected_file_name.setGeometry(50, 30, 370, 30)
             selected_file_name.setReadOnly(True)
             selected_file_name.setObjectName("selected_file_name")
             selected_file_name.setText(self.filename)
