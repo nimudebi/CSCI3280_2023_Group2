@@ -172,7 +172,7 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider_3.setRange(0, self.duration)
         self.ui.horizontalSlider.setValue(position)
         self.ui.horizontalSlider_2.setValue(self.duration)
-        self.ui.horizontalSlider_3.setValue(position)
+        self.ui.horizontalSlider_3.setValue(0)
 
     def playing_adjusting(self, position):
         self.sound_player.pause()
