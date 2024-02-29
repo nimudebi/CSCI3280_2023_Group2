@@ -81,7 +81,7 @@ def count_files(path):
 class SoundRecorder(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        self.m_flag=False
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton_3.clicked.connect(self.showMinimized)
@@ -95,13 +95,18 @@ class SoundRecorder(QMainWindow):
 
         self.ui.listWidget.setContextMenuPolicy(3)
         self.ui.listWidget.customContextMenuRequested.connect(self.show_menu)
+        # added by yitian
+        # temporarily add this function here
+        # a popup or other components may be used to replace it
+        # self.ui.listWidget.itemClicked.connect(self.audio_clicked_to_text)
 
         self.timing = QTimer()
+        self.duration = None
         self.filepath = None
         self.filename = None
         self.sound_player = QMediaPlayer()
         self.sound_player.setVolume(66)
-
+        self.ui.horizontalSlider_2.setValue(self.ui.horizontalSlider_2.maximum())
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
@@ -109,6 +114,7 @@ class SoundRecorder(QMainWindow):
 
         # attributes of speech-to-text window
         self.speech_to_text_window = None
+        self.audio_cropping_window = None
 
         self.playing = False
         self.pre_music_index = 0  # 上一首歌的index
@@ -154,8 +160,10 @@ class SoundRecorder(QMainWindow):
             context_menu.exec_(self.ui.listWidget.mapToGlobal(pos))
 
     def update_play_slider(self, position):
-        duration = self.sound_player.duration()
-        self.ui.horizontalSlider.setRange(0, duration)
+        self.duration = self.sound_player.duration()
+        self.ui.horizontalSlider.setRange(0, self.duration)
+        self.ui.horizontalSlider_2.setRange(0, self.duration)
+        self.ui.horizontalSlider_3.setRange(0, self.duration)
         self.ui.horizontalSlider.setValue(position)
 
     def playing_adjusting(self, position):
@@ -242,22 +250,25 @@ class SoundRecorder(QMainWindow):
                 self.move(mouse_event.globalPos() - self.m_Position)
                 mouse_event.accept()
 
-    # added by yitian
-    # temporarily add this function here
-    def audio_clicked_to_text(self, item):
-        # filename = item.text()
-        # filepath = os.path.join(os.getcwd(), filename)
-        self.open_speech_to_text_window()
 
+
+
+    def start_transcription(self):
+        transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
+        try:
+            transcript = speech_to_text(self.filepath)
+            transcript_area.setText(transcript)
+        except Exception as e:
+            transcript_area.setText("Error occurred during transcription: " + str(e))
     # open a new speech-to-text window
     def open_speech_to_text_window(self):
         if self.speech_to_text_window is None:
             self.speech_to_text_window = QWidget()
             self.speech_to_text_window.transcript = ""
-
+            self.ui
             # selected file name
             selected_file_name = QLineEdit(self.speech_to_text_window)
-            selected_file_name.setGeometry(50, 30, 370, 30)
+            selected_file_name.setGeometry(50, 30, 250, 30)
             selected_file_name.setReadOnly(True)
             selected_file_name.setObjectName("selected_file_name")
             selected_file_name.setText(self.filename)

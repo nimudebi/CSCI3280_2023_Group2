@@ -164,8 +164,14 @@ class Ui_MainWindow(object):
         self.frame_6.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_6.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_6.setObjectName("frame_6")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.frame_6)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.stackedWidget = QtWidgets.QStackedWidget(self.frame_6)
-        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 821, 601))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(8)
+        sizePolicy.setHeightForWidth(self.stackedWidget.sizePolicy().hasHeightForWidth())
+        self.stackedWidget.setSizePolicy(sizePolicy)
         self.stackedWidget.setStyleSheet("QStackedWidget{\n"
 "    background-color:rgb(253, 255, 248)\n"
 "}")
@@ -176,6 +182,76 @@ class Ui_MainWindow(object):
         self.page_2 = QtWidgets.QWidget()
         self.page_2.setObjectName("page_2")
         self.stackedWidget.addWidget(self.page_2)
+        self.verticalLayout_2.addWidget(self.stackedWidget)
+        self.frame_11 = QtWidgets.QFrame(self.frame_6)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setHeightForWidth(self.frame_11.sizePolicy().hasHeightForWidth())
+        self.frame_11.setSizePolicy(sizePolicy)
+        self.frame_11.setStyleSheet("QPushButton{\n"
+"    background-color:rgb(255, 246, 224);\n"
+"    border:none;\n"
+"    border-radius:22px;\n"
+"}")
+        self.frame_11.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_11.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_11.setObjectName("frame_11")
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.frame_11)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.pushButton_2 = QtWidgets.QPushButton(self.frame_11)
+        self.pushButton_2.setMinimumSize(QtCore.QSize(50, 45))
+        self.pushButton_2.setText("")
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap("./designer/scissors-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_2.setIcon(icon3)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_7.addWidget(self.pushButton_2)
+        self.horizontalSlider_3 = QtWidgets.QSlider(self.frame_11)
+        self.horizontalSlider_3.setStyleSheet("QSlider {\n"
+"    background: transparent;\n"
+"}\n"
+"QSlider::groove:horizontal{\n"
+"    height: 16px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20);}\n"
+"QSlider::handle:horizontal {\n"
+"    background-color: orange;\n"
+"    border: 2px solid #fff;\n"
+"width: 10px;\n"
+"margin-top: -3px;\n"
+"margin-bottom: -3px;\n"
+"border-radius: 5px;\n"
+"}")
+        self.horizontalSlider_3.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider_3.setObjectName("horizontalSlider_3")
+        self.horizontalLayout_7.addWidget(self.horizontalSlider_3)
+        self.horizontalSlider_2 = QtWidgets.QSlider(self.frame_11)
+        self.horizontalSlider_2.setStyleSheet("QSlider {\n"
+"    background: transparent;\n"
+"}\n"
+"QSlider::groove:horizontal{\n"
+"    height: 16px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20);}\n"
+"QSlider::handle:horizontal {\n"
+"    background-color: orange;\n"
+"    border: 2px solid #fff;\n"
+"width: 10px;\n"
+"margin-top: -3px;\n"
+"margin-bottom: -3px;\n"
+"border-radius: 5px;\n"
+"}")
+        self.horizontalSlider_2.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider_2.setTickPosition(QtWidgets.QSlider.TicksAbove)
+        self.horizontalSlider_2.setTickInterval(5)
+        self.horizontalSlider_2.setObjectName("horizontalSlider_2")
+        self.horizontalLayout_7.addWidget(self.horizontalSlider_2)
+        self.pushButton_10 = QtWidgets.QPushButton(self.frame_11)
+        self.pushButton_10.setMinimumSize(QtCore.QSize(50, 45))
+        self.pushButton_10.setText("")
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap("./designer/object-ungroup-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_10.setIcon(icon4)
+        self.pushButton_10.setObjectName("pushButton_10")
+        self.horizontalLayout_7.addWidget(self.pushButton_10)
+        self.verticalLayout_2.addWidget(self.frame_11)
         self.horizontalLayout_2.addWidget(self.frame_6)
         self.frame_6.raise_()
         self.frame_7.raise_()
@@ -217,9 +293,9 @@ class Ui_MainWindow(object):
         self.pushButton_6.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_6.setMouseTracking(True)
         self.pushButton_6.setText("")
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("./designer/backward-fast-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_6.setIcon(icon3)
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap("./designer/backward-fast-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_6.setIcon(icon5)
         self.pushButton_6.setIconSize(QtCore.QSize(25, 25))
         self.pushButton_6.setObjectName("pushButton_6")
         self.horizontalLayout_6.addWidget(self.pushButton_6)
@@ -234,9 +310,9 @@ class Ui_MainWindow(object):
 "    border-radius:22px\n"
 "}")
         self.pushButton_5.setText("")
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_5.setIcon(icon4)
+        icon6 = QtGui.QIcon()
+        icon6.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_5.setIcon(icon6)
         self.pushButton_5.setIconSize(QtCore.QSize(45, 45))
         self.pushButton_5.setObjectName("pushButton_5")
         self.horizontalLayout_6.addWidget(self.pushButton_5)
@@ -246,9 +322,9 @@ class Ui_MainWindow(object):
         self.pushButton_4.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_4.setMouseTracking(True)
         self.pushButton_4.setText("")
-        icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("./designer/forward-fast-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_4.setIcon(icon5)
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap("./designer/forward-fast-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_4.setIcon(icon7)
         self.pushButton_4.setIconSize(QtCore.QSize(25, 25))
         self.pushButton_4.setObjectName("pushButton_4")
         self.horizontalLayout_6.addWidget(self.pushButton_4)
@@ -275,12 +351,8 @@ class Ui_MainWindow(object):
 "    height:40px;\n"
 "}\n"
 "QSlider::groove:horizontal{\n"
-"        height: 13px;\n"
-"        left: 0px;\n"
-"        right: 0px;\n"
-"        border:0px;   \n"
-"        border-radius:6px;   \n"
-"        background:rgba(0,0,0,20);\n"
+"        height: 12px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20)\n"
+"        \n"
 "}\n"
 "QSlider::handle:horizontal{\n"
 "        width:  22px;\n"
@@ -311,9 +383,9 @@ class Ui_MainWindow(object):
         self.pushButton_8.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_8.setMouseTracking(True)
         self.pushButton_8.setText("")
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap("./designer/volume-high-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_8.setIcon(icon6)
+        icon8 = QtGui.QIcon()
+        icon8.addPixmap(QtGui.QPixmap("./designer/volume-high-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_8.setIcon(icon8)
         self.pushButton_8.setIconSize(QtCore.QSize(30, 30))
         self.pushButton_8.setObjectName("pushButton_8")
         self.horizontalLayout_5.addWidget(self.pushButton_8)
@@ -354,9 +426,9 @@ class Ui_MainWindow(object):
 "    border-radius:22px\n"
 "}")
         self.pushButton_9.setText("")
-        icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_9.setIcon(icon7)
+        icon9 = QtGui.QIcon()
+        icon9.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_9.setIcon(icon9)
         self.pushButton_9.setIconSize(QtCore.QSize(45, 45))
         self.pushButton_9.setObjectName("pushButton_9")
         self.horizontalLayout_4.addWidget(self.pushButton_9)
@@ -377,3 +449,4 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Sound Recorder"))
         self.pushButton_11.setText(_translate("MainWindow", " Import File"))
+
