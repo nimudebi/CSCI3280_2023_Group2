@@ -21,4 +21,4 @@ pip install matplotlib
 ## Usage  
 ```run``` the file GUI.py.  
 
-For the usage datails, please refer to the file CSCI3280Group2ProjectProgress.pdf submitted on BlackBoard.
+For the usage datails, please refer to the file CSCI3280Group2ProjectProgress.pdf and CSCI3280Group2ProjectDemo.mp4 submitted on BlackBoard.
