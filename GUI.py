@@ -12,6 +12,8 @@ import qtawesome as qta
 from version import *
 from speech_to_text import speech_to_text
 from audio_change_start_end import audio_change_start_end as cut
+import pyaudio
+from write_wav_file import write_wav_file
 
 
 def center_display(w):
@@ -130,6 +132,7 @@ class SoundRecorder(QMainWindow):
         # cut the audio
         self.ui.pushButton_2.clicked.connect(self.cut_audio)
 
+
         # Added by Yitian
         # attributes of speech-to-text window
         self.speech_to_text_window = None
@@ -141,7 +144,7 @@ class SoundRecorder(QMainWindow):
 
 
         # Todo 连到录音函数中
-        self.recording = True
+        self.recording = False
         self.ui.pushButton_9.clicked.connect(self.record_change)
 
         # Todo 如何实现弹出一个音量条
@@ -264,15 +267,40 @@ class SoundRecorder(QMainWindow):
         self.playing = not self.playing
 
     def record_change(self):
+        self.recording = not self.recording
         if self.recording:
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("./designer/circle-stop-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_9.setIcon(icon)
+            self.stream = self.open_stream()
+            self.frames = []
+            self.stream.start_stream()
         else:
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_9.setIcon(icon)
-        self.recording = not self.recording
+            self.stream.stop_stream()
+            self.stream.close()
+            self.save_recording()
+
+    def open_stream(self):
+        audio = pyaudio.PyAudio()
+        stream = audio.open(format=pyaudio.paInt16,
+                            channels=1,
+                            rate=44100,
+                            input=True,
+                            frames_per_buffer=4*1024,
+                            stream_callback=self.callback)
+        return stream
+
+    def callback(self, in_data, frame_count, time_info, status):
+        self.frames.append(in_data)
+        return in_data, pyaudio.paContinue
+
+    def save_recording(self):
+        save_path, _ = QFileDialog.getSaveFileName(self, "保存剪切后的音频", "", "WAV 文件 (*.wav)")
+        audio = pyaudio.PyAudio()
+        write_wav_file(save_path,b''.join(self.frames))
 
     # Added by Yitian
     # Switch to the previous and next audio file
