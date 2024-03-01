@@ -114,6 +114,14 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_5.setEnabled(False)
         self.ui.pushButton_2.setEnabled(False)
 
+        # Added by Yitian
+        # Switch to the previous and next audio file buttons
+        self.ui.pushButton_6.clicked.connect(self.switch_to_previous_audio)
+        self.ui.pushButton_4.clicked.connect(self.switch_to_next_audio)
+        self.ui.pushButton_6.setDisabled(True)
+        self.ui.pushButton_4.setDisabled(True)
+        self.flag_any_audio_file_selected = False
+
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
@@ -122,6 +130,7 @@ class SoundRecorder(QMainWindow):
         # cut the audio
         self.ui.pushButton_2.clicked.connect(self.cut_audio)
 
+        # Added by Yitian
         # attributes of speech-to-text window
         self.speech_to_text_window = None
         self.audio_cropping_window = None
@@ -223,6 +232,10 @@ class SoundRecorder(QMainWindow):
         m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
         self.sound_selected.setMedia(m)
 
+        if not self.flag_any_audio_file_selected:
+            self.ui.pushButton_6.setDisabled(False)
+            self.ui.pushButton_4.setDisabled(False)
+            self.flag_any_audio_file_selected = True
 
     def audio_play(self, item):
         self.filename = item.text()
@@ -238,7 +251,6 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_5.setIcon(icon)
 
     def play_change(self):
-
         if self.playing:
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -261,6 +273,28 @@ class SoundRecorder(QMainWindow):
             icon.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_9.setIcon(icon)
         self.recording = not self.recording
+
+    # Added by Yitian
+    # Switch to the previous and next audio file
+    def switch_to_previous_audio(self):
+        current_row = self.ui.listWidget.currentRow()
+        previous_row = (current_row - 1) % self.ui.listWidget.count()
+        # If there is only 1 item in the list, previous_item will be the current item
+        # If current_item is the first in the list, previous_item will be the last item
+        previous_item = self.ui.listWidget.item(previous_row)
+        self.ui.listWidget.setCurrentItem(previous_item)
+        self.audio_selected(previous_item)
+        self.audio_play(previous_item)
+
+    def switch_to_next_audio(self):
+        current_row = self.ui.listWidget.currentRow()
+        next_row = (current_row + 1) % self.ui.listWidget.count()
+        # If there is only 1 item in the list, next_item will be the current item
+        # If current_item is the last in the list, next_item will be the first item
+        next_item = self.ui.listWidget.item(next_row)
+        self.ui.listWidget.setCurrentItem(next_item)
+        self.audio_selected(next_item)
+        self.audio_play(next_item)
 
     # Todo 弹出窗口 to be implemented
     def volume_adjust(self):
