@@ -9,9 +9,9 @@ from PyQt5.Qt import *
 from PyQt5.QtMultimedia import QSound
 from PyQt5.QtCore import QTimer, QUrl, Qt
 import qtawesome as qta
-
 from version import *
 from speech_to_text import speech_to_text
+from audio_change_start_end import audio_change_start_end as cut
 
 
 def center_display(w):
@@ -19,6 +19,7 @@ def center_display(w):
     x = cptr.x() - w.width() // 2
     y = cptr.y() - w.height() // 2
     w.move(x, y)
+
 
 
 class LoginWindow(QDialog):
@@ -82,6 +83,15 @@ class SoundRecorder(QMainWindow):
     def __init__(self):
         super().__init__()
         self.m_flag=False
+        self.timing = QTimer()
+        self.filepath = None
+        self.filename = None
+        self.sound_player = QMediaPlayer()
+
+        self.sound_selected_filepath = None
+        self.sound_selected_filename = None
+        self.sound_selected = QMediaPlayer()
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton_3.clicked.connect(self.showMinimized)
@@ -95,25 +105,22 @@ class SoundRecorder(QMainWindow):
 
         self.ui.listWidget.setContextMenuPolicy(3)
         self.ui.listWidget.customContextMenuRequested.connect(self.show_menu)
-        # added by yitian
-        # temporarily add this function here
-        # a popup or other components may be used to replace it
-        # self.ui.listWidget.itemClicked.connect(self.audio_clicked_to_text)
 
-        self.timing = QTimer()
-        self.duration = None
-        self.filepath = None
-        self.filename = None
-        self.sound_player = QMediaPlayer()
         self.sound_player.setVolume(66)
+        self.ui.horizontalSlider_2.setValue(self.ui.horizontalSlider_2.maximum())
         self.ui.horizontalSlider.setDisabled(True)
         self.ui.horizontalSlider_2.setDisabled(True)
         self.ui.horizontalSlider_3.setDisabled(True)
-        self.ui.horizontalSlider_2.setValue(self.ui.horizontalSlider_2.maximum())
+        self.ui.pushButton_5.setEnabled(False)
+        self.ui.pushButton_2.setEnabled(False)
+
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
         self.ui.horizontalSlider.sliderReleased.connect(self.playing_adjusted)
+
+        # cut the audio
+        self.ui.pushButton_2.clicked.connect(self.cut_audio)
 
         # attributes of speech-to-text window
         self.speech_to_text_window = None
@@ -123,6 +130,7 @@ class SoundRecorder(QMainWindow):
         self.pre_music_index = 0  # 上一首歌的index
         self.ui.pushButton_5.clicked.connect(self.play_change)
 
+
         # Todo 连到录音函数中
         self.recording = True
         self.ui.pushButton_9.clicked.connect(self.record_change)
@@ -131,12 +139,26 @@ class SoundRecorder(QMainWindow):
         # self.ui.pushButton_8.clicked.connect(self.volume_adjust)
         # self.volume_line.valueChanged.connect(self.volume_adjust)  # 拖动音量条改变音量
 
+    def cut_audio(self):
+        start_time=self.ui.horizontalSlider_3.value()//1000
+        end_time=self.ui.horizontalSlider_2.value()//1000
+        if(start_time>=end_time):
+            QMessageBox.critical(self, "Error", f"An error occurred: start time should less than end time")
+            return
+        header,audio_data_new=cut(self.sound_selected_filepath, start_time, end_time)
+        save_path, _ = QFileDialog.getSaveFileName(self, "保存剪切后的音频", "", "WAV 文件 (*.wav)")
+        if save_path:
+            with open(save_path, 'wb') as wav_out:
+                wav_out.write(header)
+                wav_out.write(audio_data_new)
+
     def show_menu(self, pos):
         item = self.ui.listWidget.itemAt(pos)
         if item is not None:
             if item.isSelected():
-                self.filename = item.text()
-                self.filepath = os.path.join(os.getcwd(), self.filename)
+                self.sound_selected_filename = item.text()
+                self.sound_selected_filepath = os.path.join(os.getcwd(), self.sound_selected_filename)
+
 
             context_menu = QMenu(self)
             trim_action = QAction("Audio Trim", self)
@@ -163,16 +185,17 @@ class SoundRecorder(QMainWindow):
             context_menu.exec_(self.ui.listWidget.mapToGlobal(pos))
 
     def update_play_slider(self, position):
+        duration = self.sound_player.duration()
+        self.ui.horizontalSlider.setRange(0, duration)
+        self.ui.horizontalSlider.setValue(position)
         self.ui.horizontalSlider.setDisabled(False)
         self.ui.horizontalSlider_2.setDisabled(False)
         self.ui.horizontalSlider_3.setDisabled(False)
-        self.duration = self.sound_player.duration()
-        self.ui.horizontalSlider.setRange(0, self.duration)
-        self.ui.horizontalSlider_2.setRange(0, self.duration)
-        self.ui.horizontalSlider_3.setRange(0, self.duration)
-        self.ui.horizontalSlider.setValue(position)
-        self.ui.horizontalSlider_2.setValue(self.duration)
+        self.ui.horizontalSlider_2.setRange(0, self.sound_selected.duration())
+        self.ui.horizontalSlider_3.setRange(0, self.sound_selected.duration())
+        self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
         self.ui.horizontalSlider_3.setValue(0)
+
 
     def playing_adjusting(self, position):
         self.sound_player.pause()
@@ -195,31 +218,35 @@ class SoundRecorder(QMainWindow):
                 self.ui.listWidget.addItem(os.path.basename(filename))
 
     def audio_selected(self, item):
+        self.sound_selected_filename = item.text()
+        self.sound_selected_filepath = os.path.join(os.getcwd(), self.sound_selected_filename)
+        m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
+        self.sound_selected.setMedia(m)
+
+
+    def audio_play(self, item):
         self.filename = item.text()
         self.filepath = os.path.join(os.getcwd(), self.filename)
         media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
-
-    def audio_play(self, item):
-        filename = item.text()
-        filepath = os.path.join(os.getcwd(), filename)
-        media_content = QMediaContent(QUrl.fromLocalFile(filepath))
         self.sound_player.setMedia(media_content)
+        self.ui.pushButton_2.setEnabled(True)
+        self.ui.pushButton_5.setEnabled(True)
         self.playing = True
         self.sound_player.play()
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_5.setIcon(icon)
 
     def play_change(self):
 
         if self.playing:
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_5.setIcon(icon)
             self.sound_player.pause()
         else:
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_5.setIcon(icon)
             self.sound_player.play()
         self.playing = not self.playing
@@ -227,11 +254,11 @@ class SoundRecorder(QMainWindow):
     def record_change(self):
         if self.recording:
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("designer/circle-stop-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap("./designer/circle-stop-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_9.setIcon(icon)
         else:
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_9.setIcon(icon)
         self.recording = not self.recording
 
@@ -258,28 +285,24 @@ class SoundRecorder(QMainWindow):
                 self.move(mouse_event.globalPos() - self.m_Position)
                 mouse_event.accept()
 
-
-
-
     def start_transcription(self):
         transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
         try:
-            transcript = speech_to_text(self.filepath)
+            transcript = speech_to_text(self.sound_selected_filepath)
             transcript_area.setText(transcript)
         except Exception as e:
             transcript_area.setText("Error occurred during transcription: " + str(e))
-    # open a new speech-to-text window
+
     def open_speech_to_text_window(self):
         if self.speech_to_text_window is None:
             self.speech_to_text_window = QWidget()
             self.speech_to_text_window.transcript = ""
-            self.ui
             # selected file name
             selected_file_name = QLineEdit(self.speech_to_text_window)
             selected_file_name.setGeometry(50, 30, 250, 30)
             selected_file_name.setReadOnly(True)
             selected_file_name.setObjectName("selected_file_name")
-            selected_file_name.setText(self.filename)
+            selected_file_name.setText(self.sound_selected_filename)
 
             # start transcribing button
             transcribe_button = QPushButton(self.speech_to_text_window)
@@ -300,21 +323,11 @@ class SoundRecorder(QMainWindow):
         else:
             self.speech_to_text_window.transcript = ""
             selected_file_name = self.speech_to_text_window.findChild(QLineEdit, "selected_file_name")
-            selected_file_name.setText(self.filename)
+            selected_file_name.setText(self.sound_selected_filename)
             transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
             transcript_area.setText("")
             self.speech_to_text_window.show()
 
-    def start_transcription(self):
-        transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
-        try:
-            transcript = speech_to_text(self.filepath)
-            if transcript == "":
-                transcript = "Nothing detected. Please upload a clearer audio file."
-
-            transcript_area.setText(transcript)
-        except Exception as e:
-            transcript_area.setText("Error occurred during transcription: " + str(e))
 
 
 if __name__ == "__main__":
@@ -326,257 +339,3 @@ if __name__ == "__main__":
         w = SoundRecorder()
         w.show()
     sys.exit(app.exec_())
-
-'''
-import sys
-import os
-import numpy as np
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, \
-    QListWidget
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtGui import QImage, QPixmap
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
-
-
-class PlotWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout(self)
-
-        self.figure, self.ax = plt.subplots()
-        self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
-
-    def plot_audio(self, audio_data):
-        self.ax.clear()
-        self.ax.plot(audio_data)
-        self.canvas.draw()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    player = AudioPlayer()
-    player.show()
-    sys.exit(app.exec_())
-
-
-class ControlPanel(QWidget):
-    def __init__(self, title):
-        super().__init__()
-
-        #TODO  这里有问题，如何和RecordingExplorer联动，找到目前选择了哪个文件
-        self.sound = QSound('sound.wav')
-        self.sound.setLoops(1)
-
-
-        record_btn = QPushButton()
-        record_btn.setsetIcon(qta.icon("ph.record-bold"))
-        record_btn.setStyleSheet("background-color: white; color: red;")
-        record_btn.setFixedSize(50, 50)
-        self.button.clicked.connect(self.record_change)
-        self.record_flag = True
-
-        play_btn = QPushButton()
-        play_btn.setsetIcon(qta.icon("fa.play-circle-o"))
-        play_btn.setFixedSize(50, 50)
-        play_btn.setStyleSheet("background-color: white; color: black;")
-        self.button.clicked.connect(self.play_change)
-        self.play_flag = True
-    def record_change(self):
-        if self.record_flag:
-            self.setsetIcon(qta.icon("fa5.stop-circle"))
-            self.setStyleSheet("background-color: white; color: red;")
-            self.setFixedSize(50, 50)
-
-        else:
-            self.setsetIcon(qta.icon("ph.record-bold"))
-            self.setStyleSheet("background-color: white; color: red;")
-            self.setFixedSize(50, 50)
-
-        self.record_flag = not self.record_flag
-    def play_change(self):
-        if self.play_flag:
-            self.setsetIcon(qta.icon("fa.play-circle-o"))
-            self.setStyleSheet("background-color: white; color: black;")
-            self.setFixedSize(50, 50)
-            self.sound.play
-        else:
-            self.setsetIcon(qta.icon("fa5.pause-circle"))
-            self.setStyleSheet("background-color: white; color: black;")
-            self.setFixedSize(50, 50)
-
-        self.play_flag = not self.play_flag
-
-
-class RecordingExplorer(QMainWindow):
-    def __init__(self, title):
-        super().__init__()
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(f"This is {title}"))
-        layout.addWidget(QPushButton("Button"))
-        self.setLayout(layout)
-
-
-class SoundWindow(QWidget):
-    def __init__(self,path):
-        super(SoundWindow, self).__init__()
-        self.sound_effect = QSoundEffect(self)
-        self.sound_effect.setSource(QUrl.fromLocalFile(path))
-        self.sound_effect.setVolume(1.0)
-        def create_stacked_layout():
-            self.stacked_layout = QStackedLayout()
-
-
-            path=".//sound_files"
-            num_files, file_list=count_files(path)
-
-            for i in range(num):
-                x
-                self.stacked_layout.addWidget(x)
-
-        # Recording Explorer
-        self.RE = QWidget()
-        self.RE.setObjectName('Recording Explorer')
-        self.RE_layout = QGridLayout()
-        self.RE.setLayout(self.RE_layout)
-
-        self.setWindowTitle("Sound Recorder")
-        self.setGeometry(100, 100, 1500, 800)
-        self.create_stacked_layout()
-        container=QVBoxLayout()
-        re = RecordingExplorer("Recording Explorer")
-        cp = ControlPanel("Control Panel")
-        w=QWidget()
-        w.setLayout(self.stacked_layout)
-        re = RecordingExplorer("Recording Explorer")
-
-        top_right_layout = QVBoxLayout()
-        bottom_layout = QHBoxLayout()
-        center_display(self)
-'''
-
-'''
-
-import os
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel
-from PyQt5.QtGui import QPixmap
-
-class FileViewer(QWidget):
-    def __init__(self, directory):
-        super().__init__()
-        self.directory = directory
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle('File Viewer')
-
-        # 创建主水平布局
-        mainLayout = QHBoxLayout()
-
-        # 创建左侧垂直布局
-        leftLayout = QVBoxLayout()
-
-        # 创建滚动区域
-        scrollArea = QScrollArea()
-        scrollArea.setWidgetResizable(True)
-
-        # 创建滚动区域内的 widget
-        scrollWidget = QWidget()
-        scrollLayout = QVBoxLayout(scrollWidget)
-
-        # 创建按钮列表
-        self.buttons = []
-
-        # 遍历目录中的文件
-        for file in os.listdir(self.directory):
-            if os.path.isfile(os.path.join(self.directory, file)):
-                # 创建按钮并添加到布局
-                button = QPushButton(file)
-                button.clicked.connect(lambda state, file=file: self.showImage(file))
-                scrollLayout.addWidget(button)
-                self.buttons.append(button)
-
-        scrollArea.setWidget(scrollWidget)
-        leftLayout.addWidget(scrollArea)
-
-        # 创建右侧标签用于显示图片
-        self.imageLabel = QLabel()
-        rightLayout = QVBoxLayout()
-        rightLayout.addWidget(self.imageLabel)
-
-        # 将左侧和右侧布局添加到主布局中
-        mainLayout.addLayout(leftLayout)
-        mainLayout.addLayout(rightLayout)
-
-        self.setLayout(mainLayout)
-
-    def showImage(self, filename):
-        # 获取文件路径
-        filepath = os.path.join(self.directory, filename)
-        # 显示图片
-        pixmap = QPixmap(filepath)
-        self.imageLabel.setPixmap(pixmap)
-
-if __name__ == '__main__':
-    app = QApplication([])
-    directory = './sound_files'
-    fileViewer = FileViewer(directory)
-    fileViewer.show()
-    app.exec_()
-
-
-
-def playVideo(self, filename):
-        # 获取文件路径
-        filepath = os.path.join(self.directory, filename)
-        # 加载视频
-        self.videoPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(filepath)))
-        # 播放视频
-        self.videoPlayer.play()
-
-
-
-
-
-class qt_view(QWidget):
-    def __init__(self):
-        super(qt_view, self).__init__()
-
-        self.resize(600, 250)
-        self.setWindowTitle("圆点选择")
-
-        self.radioButton_1 = QtWidgets.QRadioButton(self)
-        self.radioButton_1.setGeometry(QtCore.QRect(230, 100, 89, 16))
-        self.radioButton_1.setStyleSheet("font-family:微软雅黑; color:black;")
-        self.radioButton_1.setObjectName("radioButton_1")
-        self.radioButton_2 = QtWidgets.QRadioButton(self)
-        self.radioButton_2.setGeometry(QtCore.QRect(310, 100, 89, 16))
-        self.radioButton_2.setStyleSheet("font-family:微软雅黑; color:black;")
-        self.radioButton_2.setObjectName("radioButton_2")
-
-        translate = QtCore.QCoreApplication.translate
-        self.radioButton_1.setText(translate("Form", "选项1"))
-        self.radioButton_2.setText(translate("Form", "选项2"))
-
-
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    my = qt_view()
-    my.show()
-
-
-
-
-
-
-
-        handle_rect = self.style().subControlRect(QStyle.CC_Slider, self, QStyle.SC_SliderHandle)
-            if handle_rect.contains(event.pos()):
-                # 如果鼠标在滑块上，设置鼠标指针为选中手势
-                QApplication.setOverrideCursor(Qt.PointingHandCursor)
-            else:
-                # 否则恢复默认的鼠标指针样式
-                QApplication.restoreOverrideCursor()
-'''
