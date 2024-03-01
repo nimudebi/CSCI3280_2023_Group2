@@ -200,7 +200,7 @@ class SoundRecorder(QMainWindow):
         if item is not None:
             if item.isSelected():
                 self.sound_selected_filename = item.text()
-                self.sound_selected_filepath = os.path.join(os.getcwd(), self.sound_selected_filename)
+                self.sound_selected_filepath = item.data(Qt.UserRole)
 
 
             context_menu = QMenu(self)
@@ -261,11 +261,13 @@ class SoundRecorder(QMainWindow):
         if file_dialog.exec_():
             filenames = file_dialog.selectedFiles()
             for filename in filenames:
-                self.ui.listWidget.addItem(os.path.basename(filename))
+                item = QListWidgetItem(os.path.basename(filename))
+                item.setData(Qt.UserRole, filename)
+                self.ui.listWidget.addItem(item)
 
     def audio_selected(self, item):
         self.sound_selected_filename = item.text()
-        self.sound_selected_filepath = os.path.join(os.getcwd(), self.sound_selected_filename)
+        self.sound_selected_filepath = item.data(Qt.UserRole)
         m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
         self.sound_selected.setMedia(m)
 
@@ -276,7 +278,7 @@ class SoundRecorder(QMainWindow):
 
     def audio_play(self, item):
         self.filename = item.text()
-        self.filepath = os.path.join(os.getcwd(), self.filename)
+        self.filepath = item.data(Qt.UserRole)
         media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
         self.sound_player.setMedia(media_content)
         self.ui.pushButton_2.setEnabled(True)
