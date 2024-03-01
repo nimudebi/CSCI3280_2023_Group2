@@ -208,36 +208,51 @@ class Ui_MainWindow(object):
         self.pushButton_2.setObjectName("pushButton_2")
         self.horizontalLayout_7.addWidget(self.pushButton_2)
         self.horizontalSlider_3 = QtWidgets.QSlider(self.frame_11)
-        self.horizontalSlider_3.setStyleSheet("QSlider {\n"
-"    background: transparent;\n"
-"}\n"
-"QSlider::groove:horizontal{\n"
-"    height: 16px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20);}\n"
-"QSlider::handle:horizontal {\n"
-"    background-color: orange;\n"
-"    border: 2px solid #fff;\n"
-"width: 10px;\n"
-"margin-top: -3px;\n"
-"margin-bottom: -3px;\n"
-"border-radius: 5px;\n"
-"}")
+        self.horizontalSlider_3.setTickPosition(QtWidgets.QSlider.TicksAbove)
+        self.horizontalSlider_3.setStyleSheet(
+
+                "QSlider::handle:horizontal {\n"
+                "    background-color: orange;\n"
+                "    border: 2px solid #fff;\n"
+                "    width: 10px;\n"
+                "    margin-top: -3px;\n"
+                "    margin-bottom: -3px;\n"
+                "    border-radius: 5px;\n"
+                "}\n"
+                "QSlider::add-page:horizontal {\n"
+                "    background: transparent;\n"
+                "}\n"
+                "QSlider::sub-page:horizontal {\n"
+                "    background: transparent;\n"
+                "}\n"
+                "QSlider::handle:horizontal:hover {\n"
+                "    background-color:rgb(203, 93, 38);\n"
+                "}\n"
+        )
+
         self.horizontalSlider_3.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_3.setObjectName("horizontalSlider_3")
         self.horizontalLayout_7.addWidget(self.horizontalSlider_3)
         self.horizontalSlider_2 = QtWidgets.QSlider(self.frame_11)
-        self.horizontalSlider_2.setStyleSheet("QSlider {\n"
-"    background: transparent;\n"
-"}\n"
-"QSlider::groove:horizontal{\n"
-"    height: 16px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20);}\n"
-"QSlider::handle:horizontal {\n"
-"    background-color: orange;\n"
-"    border: 2px solid #fff;\n"
-"width: 10px;\n"
-"margin-top: -3px;\n"
-"margin-bottom: -3px;\n"
-"border-radius: 5px;\n"
-"}")
+        self.horizontalSlider_2.setTickPosition(QtWidgets.QSlider.TicksAbove)
+        self.horizontalSlider_2.setStyleSheet(
+                "QSlider::handle:horizontal {\n"
+                "    background-color: orange;\n"
+                "    border: 2px solid #fff;\n"
+                "    width: 10px;\n"
+                "    margin-top: -3px;\n"
+                "    margin-bottom: -3px;\n"
+                "    border-radius: 5px;\n"
+                "}\n"
+                "QSlider::add-page:horizontal {\n"
+                "    background: transparent;\n"
+                "}\n"
+                "QSlider::sub-page:horizontal {\n"
+                "    background: transparent;\n"
+                "}\n"
+                "QSlider::handle:horizontal:hover {\n"
+                "    background-color:rgb(203, 93, 38);\n"
+                "}\n")
         self.horizontalSlider_2.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_2.setTickPosition(QtWidgets.QSlider.TicksAbove)
         self.horizontalSlider_2.setTickInterval(5)
