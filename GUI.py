@@ -158,7 +158,7 @@ class SoundRecorder(QMainWindow):
             QMessageBox.critical(self, "Error", f"An error occurred: start time should less than end time")
             return
         header,audio_data_new=cut(self.sound_selected_filepath, start_time, end_time)
-        save_path, _ = QFileDialog.getSaveFileName(self, "保存剪切后的音频", "", "WAV 文件 (*.wav)")
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
         if save_path:
             with open(save_path, 'wb') as wav_out:
                 wav_out.write(header)
@@ -279,9 +279,12 @@ class SoundRecorder(QMainWindow):
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.ui.pushButton_9.setIcon(icon)
-            self.stream.stop_stream()
-            self.stream.close()
-            self.save_recording()
+            self.stop_recording()
+
+    def stop_recording(self):
+        self.stream.stop_stream()
+        self.stream.close()
+        self.save_recording()
 
     def open_stream(self):
         audio = pyaudio.PyAudio()
@@ -298,9 +301,11 @@ class SoundRecorder(QMainWindow):
         return in_data, pyaudio.paContinue
 
     def save_recording(self):
-        save_path, _ = QFileDialog.getSaveFileName(self, "保存剪切后的音频", "", "WAV 文件 (*.wav)")
-        audio = pyaudio.PyAudio()
-        write_wav_file(save_path,b''.join(self.frames))
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
+        if save_path:
+            audio = pyaudio.PyAudio()
+            write_wav_file(save_path,b''.join(self.frames))
+
 
     # Added by Yitian
     # Switch to the previous and next audio file
@@ -324,7 +329,7 @@ class SoundRecorder(QMainWindow):
         self.audio_selected(next_item)
         self.audio_play(next_item)
 
-    # Todo 弹出窗口 to be implemented
+    # to be implemented
     def volume_adjust(self):
         self.sound_player.setVolume(self.volume_line.value())
         if self.volume_line.value() == 0:
