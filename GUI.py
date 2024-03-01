@@ -14,6 +14,7 @@ from speech_to_text import speech_to_text
 from audio_change_start_end import audio_change_start_end as cut
 import pyaudio
 from write_wav_file import write_wav_file
+from playback_and_speed_control import speed_control
 
 
 def center_display(w):
@@ -90,6 +91,7 @@ class SoundRecorder(QMainWindow):
         self.filename = None
         self.sound_player = QMediaPlayer()
 
+        self.speed=1
         self.sound_selected_filepath = None
         self.sound_selected_filename = None
         self.sound_selected = QMediaPlayer()
@@ -132,7 +134,7 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider_2.setTickInterval(1000)
         # cut the audio
         self.ui.pushButton_2.clicked.connect(self.cut_audio)
-
+        self.final_flag = False
 
         # Added by Yitian
         # attributes of speech-to-text window
@@ -143,14 +145,42 @@ class SoundRecorder(QMainWindow):
         self.pre_music_index = 0
         self.ui.pushButton_5.clicked.connect(self.play_change)
 
-
-        # Todo 连到录音函数中
         self.recording = False
         self.ui.pushButton_9.clicked.connect(self.record_change)
 
-        # Todo 如何实现弹出一个音量条
+        self.menu = QMenu()
+        self.action1 = QAction("x0.5")
+        self.action1.triggered.connect(self.speed1)
+        self.menu.addAction(self.action1)
+        self.action2 = QAction("x1.0")
+        self.action2.triggered.connect(self.speed2)
+        self.menu.addAction(self.action2)
+        self.action3 = QAction("x2.0")
+        self.action3.triggered.connect(self.speed3)
+        self.menu.addAction(self.action3)
+
+        self.ui.toolButton.setMenu(self.menu)
+        self.ui.toolButton.setPopupMode(QToolButton.InstantPopup)
+
+    def speed1(self):
+        if self.filepath:
+            self.speed = 0.5
+            speed_control(self.filepath,0.5)
+
+    def speed2(self):
+        self.speed = 1
+        return
+
+    def speed3(self):
+        if self.filepath:
+            self.speed = 2
+            speed_control(self.filepath, 2)
+
+        # To be implement
         # self.ui.pushButton_8.clicked.connect(self.volume_adjust)
         # self.volume_line.valueChanged.connect(self.volume_adjust)
+    def overwrite(self):
+        start_time = self.ui.horizontalSlider_3.value() // 1000
 
     def cut_audio(self):
         start_time=self.ui.horizontalSlider_3.value()//1000
@@ -223,6 +253,7 @@ class SoundRecorder(QMainWindow):
     def final(self, status):
         if status == QMediaPlayer.EndOfMedia:
             self.play_change()
+            self.final_flag=True
 
     def load_audio(self):
         file_dialog = QFileDialog()
@@ -257,6 +288,13 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_5.setIcon(icon)
 
     def play_change(self):
+        if self.final_flag:
+            self.final_flag=False
+            if self.speed != 1:
+                filename = f"{self.filename}_{self.speed}.wav"
+                self.filepath = os.path.join(os.getcwd(), filename)
+                media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
+                self.sound_player.setMedia(media_content)
         if self.playing:
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
