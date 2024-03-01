@@ -351,9 +351,14 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_10.sizePolicy().hasHeightForWidth())
         self.frame_10.setSizePolicy(sizePolicy)
         self.frame_10.setStyleSheet("QPushButton{\n"
-"    border:none;\n"
-"    border-radius:22px;\n"
-"}")
+                                "    border:none;\n"
+                                "    border-radius:22px;\n"
+                                "}"
+                                    "QToolButton{\n"
+                                    "    border:none;\n"
+                                    "    border-radius:22px;\n"
+                                    "}"
+                                    )
         self.frame_10.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_10.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_10.setObjectName("frame_10")
@@ -404,14 +409,19 @@ class Ui_MainWindow(object):
         self.pushButton_8.setIconSize(QtCore.QSize(30, 30))
         self.pushButton_8.setObjectName("pushButton_8")
         self.horizontalLayout_5.addWidget(self.pushButton_8)
-        self.pushButton_7 = QtWidgets.QPushButton(self.frame_10)
-        self.pushButton_7.setMinimumSize(QtCore.QSize(45, 45))
-        self.pushButton_7.setMaximumSize(QtCore.QSize(45, 45))
-        self.pushButton_7.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.pushButton_7.setMouseTracking(True)
-        self.pushButton_7.setText("")
-        self.pushButton_7.setObjectName("pushButton_7")
-        self.horizontalLayout_5.addWidget(self.pushButton_7)
+        self.toolButton = QtWidgets.QToolButton(self.frame_10)
+        self.toolButton.setMinimumSize(QtCore.QSize(45, 45))
+        self.toolButton.setMaximumSize(QtCore.QSize(45, 45))
+        self.toolButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.toolButton.setMouseTracking(True)
+        self.toolButton.setText("")
+        self.toolButton.setObjectName("toolButton")
+        self.toolButton.setText("")
+        icon100 = QtGui.QIcon()
+        icon100.addPixmap(QtGui.QPixmap("./designer/gauge-simple-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.toolButton.setIcon(icon100)
+        self.toolButton.setIconSize(QtCore.QSize(30, 30))
+        self.horizontalLayout_5.addWidget(self.toolButton)
         self.horizontalLayout_3.addWidget(self.frame_10)
         self.frame_9 = QtWidgets.QFrame(self.frame_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
