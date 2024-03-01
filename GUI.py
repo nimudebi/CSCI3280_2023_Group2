@@ -128,7 +128,8 @@ class SoundRecorder(QMainWindow):
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
         self.ui.horizontalSlider.sliderReleased.connect(self.playing_adjusted)
-
+        self.ui.horizontalSlider_3.setTickInterval(1000)
+        self.ui.horizontalSlider_2.setTickInterval(1000)
         # cut the audio
         self.ui.pushButton_2.clicked.connect(self.cut_audio)
 
@@ -137,9 +138,9 @@ class SoundRecorder(QMainWindow):
         # attributes of speech-to-text window
         self.speech_to_text_window = None
         self.audio_cropping_window = None
-
+        self.change_label=False
         self.playing = False
-        self.pre_music_index = 0  # 上一首歌的index
+        self.pre_music_index = 0
         self.ui.pushButton_5.clicked.connect(self.play_change)
 
 
@@ -149,7 +150,7 @@ class SoundRecorder(QMainWindow):
 
         # Todo 如何实现弹出一个音量条
         # self.ui.pushButton_8.clicked.connect(self.volume_adjust)
-        # self.volume_line.valueChanged.connect(self.volume_adjust)  # 拖动音量条改变音量
+        # self.volume_line.valueChanged.connect(self.volume_adjust)
 
     def cut_audio(self):
         start_time=self.ui.horizontalSlider_3.value()//1000
@@ -203,10 +204,12 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider.setDisabled(False)
         self.ui.horizontalSlider_2.setDisabled(False)
         self.ui.horizontalSlider_3.setDisabled(False)
-        self.ui.horizontalSlider_2.setRange(0, self.sound_selected.duration())
-        self.ui.horizontalSlider_3.setRange(0, self.sound_selected.duration())
-        self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
-        self.ui.horizontalSlider_3.setValue(0)
+        if self.change_label is not True:
+            self.change_label = True
+            self.ui.horizontalSlider_2.setRange(0, self.sound_selected.duration())
+            self.ui.horizontalSlider_3.setRange(0, self.sound_selected.duration())
+            self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
+            self.ui.horizontalSlider_3.setValue(0)
 
 
     def playing_adjusting(self, position):
@@ -363,7 +366,33 @@ class SoundRecorder(QMainWindow):
     def open_speech_to_text_window(self):
         if self.speech_to_text_window is None:
             self.speech_to_text_window = QWidget()
+            self.speech_to_text_window.setObjectName("speech_to_text_window")
             self.speech_to_text_window.transcript = ""
+            self.speech_to_text_window.setStyleSheet("""
+            #speech_to_text_window{
+                border:none;
+                background-color:rgb(224, 254, 255);
+                background-image: url(./designer/2.png);
+            } 
+            QPushButton{
+                background-color: rgba(215, 255, 210,20);
+                border:none;
+                border-radius:11px;
+                font:  15px;
+                color: white;
+            }
+            QLineEdit{
+                border:none;
+            }    
+            QTextEdit{
+                border:none;
+            }
+                
+                
+                
+                
+                
+            """)
             # selected file name
             selected_file_name = QLineEdit(self.speech_to_text_window)
             selected_file_name.setGeometry(50, 30, 250, 30)
