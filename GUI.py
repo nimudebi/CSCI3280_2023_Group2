@@ -256,7 +256,7 @@ class SoundRecorder(QMainWindow):
     def final(self, status):
         if status == QMediaPlayer.EndOfMedia:
             self.play_change()
-            self.final_flag = True
+
 
     def load_audio(self):
         file_dialog = QFileDialog()
@@ -312,13 +312,11 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_5.setIcon(icon)
 
     def play_change(self):
-        if self.final_flag:
-            self.final_flag = False
-            if self.speed != 1:
-                filename = f"{self.filename}_{self.speed}.wav"
-                self.filepath = os.path.join(os.getcwd(), filename)
-                media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
-                self.sound_player.setMedia(media_content)
+        if self.speed != 1:
+            filename = f"{self.filename}_{self.speed}.wav"
+            self.filepath = os.path.join(os.getcwd(), filename)
+            media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
+            self.sound_player.setMedia(media_content)
 
         if self.playing:
             icon = QtGui.QIcon()
@@ -444,11 +442,6 @@ class SoundRecorder(QMainWindow):
                         QTextEdit{
                             border:none;
                         }
-
-
-
-
-
                         """)
 
             # Selected file name
