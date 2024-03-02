@@ -266,6 +266,7 @@ class SoundRecorder(QMainWindow):
                 self.ui.listWidget.addItem(item)
 
     def audio_selected(self, item):
+        self.change_label = False
         self.sound_selected_filename = item.text()
         self.sound_selected_filepath = item.data(Qt.UserRole)
         m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
