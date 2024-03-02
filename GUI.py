@@ -121,7 +121,7 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_5.setEnabled(False)
         self.ui.pushButton_2.setEnabled(False)
 
-        self.editing_window=None
+        self.editing_window = None
 
         # Added by Yitian
         # Switch to the previous and next audio file buttons
@@ -148,6 +148,7 @@ class SoundRecorder(QMainWindow):
         # attributes of speech-to-text window
         self.speech_to_text_window = None
         self.audio_cropping_window = None
+
         self.change_label = False
         self.playing = False
         self.pre_music_index = 0
@@ -189,8 +190,13 @@ class SoundRecorder(QMainWindow):
         # self.volume_line.valueChanged.connect(self.volume_adjust)
 
     def overwrite(self):
-        start_time = self.ui.horizontalSlider_3.value() // 1000
-        trim(self.filepath, self.filepath, start_time, self.sound_selected_filepath)
+        start_time = self.ui.horizontalSlider_2.value() // 1000
+        fresh_recording = self.sound_selected_filepath
+        input_path = self.filepath
+
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
+        if save_path:
+            trim(input_path, save_path, start_time, fresh_recording)
 
     def cut_audio(self):
         start_time = self.ui.horizontalSlider_3.value() // 1000
@@ -198,12 +204,9 @@ class SoundRecorder(QMainWindow):
         if (start_time >= end_time):
             QMessageBox.critical(self, "Error", f"An error occurred: start time should less than end time")
             return
-        header, audio_data_new = cut(self.sound_selected_filepath, start_time, end_time)
         save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
         if save_path:
-            with open(save_path, 'wb') as wav_out:
-                wav_out.write(header)
-                wav_out.write(audio_data_new)
+            cut(self.sound_selected_filepath, save_path, start_time, end_time)
 
     def show_menu(self, pos):
         item = self.ui.listWidget.itemAt(pos)
@@ -241,13 +244,14 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider.setRange(0, duration)
         self.ui.horizontalSlider.setValue(position)
         self.ui.horizontalSlider.setDisabled(False)
-        self.ui.horizontalSlider_2.setDisabled(False)
-        self.ui.horizontalSlider_3.setDisabled(False)
-        if self.change_label is not True:
+
+        if self.change_label is not True and self.sound_player.mediaStatus() == QMediaPlayer.LoadedMedia:
             self.change_label = True
-            self.ui.horizontalSlider_2.setRange(0, self.sound_selected.duration())
-            self.ui.horizontalSlider_3.setRange(0, self.sound_selected.duration())
-            self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
+            self.ui.horizontalSlider_2.setDisabled(False)
+            self.ui.horizontalSlider_3.setDisabled(False)
+            self.ui.horizontalSlider_2.setRange(0, self.sound_player.duration())
+            self.ui.horizontalSlider_3.setRange(0, self.sound_player.duration())
+            self.ui.horizontalSlider_2.setValue(self.sound_player.duration())
             self.ui.horizontalSlider_3.setValue(0)
 
     def playing_adjusting(self, position):
@@ -273,7 +277,7 @@ class SoundRecorder(QMainWindow):
                 self.ui.listWidget.addItem(item)
 
     def visualization(self):
-        audio_image = audio_visualization_fixed(self.sound_selected_filepath)
+        audio_image = audio_visualization_fixed(self.filepath)
         # 将图像数据转换为QImage对象
         height, width, channel = audio_image.shape
         bytes_per_line = channel * width
@@ -295,7 +299,6 @@ class SoundRecorder(QMainWindow):
         self.sound_selected_filepath = item.data(Qt.UserRole)
         m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
         self.sound_selected.setMedia(m)
-        self.visualization()
 
         if not self.flag_any_audio_file_selected:
             self.ui.pushButton_6.setDisabled(False)
@@ -314,6 +317,7 @@ class SoundRecorder(QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_5.setIcon(icon)
+        self.visualization()
 
     def play_change(self):
         if self.speed != 1:
@@ -555,7 +559,6 @@ class SoundRecorder(QMainWindow):
             warning_message.setText("Successfully set shifting pitch.")
         except ValueError:
             warning_message.setText("Invalid shifting pitch, please enter a valid integer.")
-
 
     def start_transcription(self):
         transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")

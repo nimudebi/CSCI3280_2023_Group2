@@ -11,6 +11,11 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
         num_samples_fresh = data_size_fresh // sample_size_fresh
         audio_len_sec_fresh = num_samples_fresh // sample_rate_fresh
 
+
+    if sample_rate_fresh != 44100:
+        print("invalid sample rate")
+        return
+
     with open(input_file, 'rb') as wav_in:
         # read header file
         header_in = bytearray(wav_in.read(44))
@@ -27,6 +32,29 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
         num_samples_in = data_size_in // sample_size_in  # 160390 samples
         audio_len_sec_in = num_samples_in // sample_rate_in  # 7.2739229024943315 seconds
 
+    if start_time < 0 or int(start_time) > audio_len_sec_in:
+        print("Warning: Time region out of limit!\n")
+
+    audio_data_new = bytearray()
+
+    if int(int(start_time) + audio_len_sec_fresh) <= audio_len_sec_in:
+        audio_data_new.extend(audio_data_in[0:int(int(start_time) * byte_rate_in)])
+        audio_data_new.extend(audio_data_fresh[0:int(audio_len_sec_fresh * byte_rate_fresh)])
+        audio_data_new.extend(audio_data_in[
+                              (int(int(start_time) * byte_rate_in) + int(audio_len_sec_fresh * byte_rate_fresh)):(
+                                  int(audio_len_sec_in * byte_rate_in))])
+
+    if int(int(start_time) + audio_len_sec_fresh) > audio_len_sec_in:
+        audio_data_new.extend(audio_data_in[0:int(int(start_time) * byte_rate_in)])
+        audio_data_new.extend(audio_data_fresh)
+        data_size_new = int(start_time) * byte_rate_in + audio_len_sec_fresh * byte_rate_fresh
+        # data_size_new = int(int(start_time) + audio_len_sec_fresh) * byte_rate_in
+
+        # print("data and data type of data_size_new: ",data_size_new,"  ",type(data_size_new),"\n")
+        data_size_new_byte = data_size_new.to_bytes(4, 'little')
+        header_in[40:44] = data_size_new_byte
+
+    '''
     # overwrite the input audio with fresh recording
     if start_time < 0 or (int(start_time) + audio_len_sec_fresh) > audio_len_sec_in:
         print("Warning: Time region out of limit!\n")
@@ -37,6 +65,7 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
     audio_data_new.extend(audio_data_in[
                           (int(int(start_time) * byte_rate_in) + int(audio_len_sec_fresh * byte_rate_fresh)):(
                               int(audio_len_sec_in * byte_rate_in))])
+    '''
 
     '''
     if(start_time>=end_time or start_time<0 or end_time>audio_len_sec):
@@ -51,8 +80,9 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
     '''
     # store new data into new wav file
     with open(output_file, 'wb') as wav_out:
+        print("start outputing\n")
         wav_out.write(header_in)
         wav_out.write(audio_data_new)
     # print("finish saving trimming data\n")
 
-# audio_overwrite("D:\CUHK\Y2T2\csci3280\proj\phase1\\test_water_drops.wav","D:\CUHK\Y2T2\csci3280\proj\phase1\\test_water_drops_overwrite.wav",4,"D:\CUHK\Y2T2\csci3280\proj\phase1\CantinaBand3.wav")
+
