@@ -193,7 +193,9 @@ class SoundRecorder(QMainWindow):
         start_time = self.ui.horizontalSlider_3.value() // 1000
         fresh_recording = self.sound_selected_filepath
         input_path = self.filepath
-
+        if start_time < 0 or start_time > self.sound_player.duration()//1000:
+            QMessageBox.critical(self, "Error", f"Warning: Time region out of limit!")
+            return
         save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
         if save_path:
             trim(input_path, save_path, start_time, fresh_recording)
