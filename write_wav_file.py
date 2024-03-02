@@ -1,4 +1,4 @@
-def write_wav_file(filename,audio_data,sample_rate):
+def write_wav_file(filename, audio_data, sample_rate):
     # WAV file header constants
     chunk_id = b"RIFF"
     format_type = b"WAVE"
@@ -13,7 +13,7 @@ def write_wav_file(filename,audio_data,sample_rate):
 
     # Calculate the data size
     data_size = len(audio_data)
-     # Total file size excluding the first 8 bytes (RIFF chunk_id and file size)
+    # Total file size excluding the first 8 bytes (RIFF chunk_id and file size)
     chunk_size = 36 + data_size
 
     with open(filename, "wb") as wav_file:

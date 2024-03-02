@@ -28,7 +28,7 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
         audio_len_sec_in = num_samples_in // sample_rate_in  # 7.2739229024943315 seconds
 
     # overwrite the input audio with fresh recording
-    if (start_time < 0 or (int(start_time) + audio_len_sec_fresh) > audio_len_sec_in):
+    if start_time < 0 or (int(start_time) + audio_len_sec_fresh) > audio_len_sec_in:
         print("Warning: Time region out of limit!\n")
         return
     audio_data_new = bytearray()

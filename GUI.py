@@ -131,6 +131,9 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_4.setDisabled(True)
         self.flag_any_audio_file_selected = False
 
+        # Audio trimming
+        self.ui.pushButton_10.clicked.connect(self.overwrite)
+
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
@@ -187,6 +190,7 @@ class SoundRecorder(QMainWindow):
 
     def overwrite(self):
         start_time = self.ui.horizontalSlider_3.value() // 1000
+        trim(self.filepath, self.filepath, start_time, self.sound_selected_filepath)
 
     def cut_audio(self):
         start_time = self.ui.horizontalSlider_3.value() // 1000
@@ -257,7 +261,6 @@ class SoundRecorder(QMainWindow):
     def final(self, status):
         if status == QMediaPlayer.EndOfMedia:
             self.play_change()
-
 
     def load_audio(self):
         file_dialog = QFileDialog()
