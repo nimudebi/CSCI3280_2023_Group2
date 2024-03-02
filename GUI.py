@@ -245,7 +245,7 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider.setValue(position)
         self.ui.horizontalSlider.setDisabled(False)
 
-        if self.change_label is not True and self.sound_player.mediaStatus() == QMediaPlayer.LoadedMedia:
+        if self.change_label is not True:
             self.change_label = True
             self.ui.horizontalSlider_2.setDisabled(False)
             self.ui.horizontalSlider_3.setDisabled(False)
