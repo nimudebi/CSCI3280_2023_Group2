@@ -166,23 +166,30 @@ class Ui_MainWindow(object):
         self.frame_6.setObjectName("frame_6")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.frame_6)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.stackedWidget = QtWidgets.QStackedWidget(self.frame_6)
+        self.label_2 = QtWidgets.QLabel(self.frame_6)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(8)
-        sizePolicy.setHeightForWidth(self.stackedWidget.sizePolicy().hasHeightForWidth())
-        self.stackedWidget.setSizePolicy(sizePolicy)
-        self.stackedWidget.setStyleSheet("QStackedWidget{\n"
-"    background-color:rgb(253, 255, 248)\n"
-"}")
-        self.stackedWidget.setObjectName("stackedWidget")
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
+        self.label_2.setText("")
+        self.label_2.setObjectName("label_2")
+        self.verticalLayout_2.addWidget(self.label_2)
+
+        """
+        "QStackedWidget{\n"
+        "    background-color:rgb(253, 255, 248)\n"
+        "}"
+        """
+
         self.page = QtWidgets.QWidget()
         self.page.setObjectName("page")
-        self.stackedWidget.addWidget(self.page)
+
         self.page_2 = QtWidgets.QWidget()
         self.page_2.setObjectName("page_2")
-        self.stackedWidget.addWidget(self.page_2)
-        self.verticalLayout_2.addWidget(self.stackedWidget)
+
+
+
         self.frame_11 = QtWidgets.QFrame(self.frame_6)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -466,7 +473,6 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
