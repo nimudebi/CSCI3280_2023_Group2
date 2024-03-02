@@ -11,6 +11,7 @@ from PyQt5.QtCore import QTimer, QUrl, Qt
 import qtawesome as qta
 from version import *
 from speech_to_text import speech_to_text
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from audio_change_start_end import audio_change_start_end as cut
 import pyaudio
 from write_wav_file import write_wav_file
@@ -290,7 +291,7 @@ class SoundRecorder(QMainWindow):
         self.sound_selected_filepath = item.data(Qt.UserRole)
         m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
         self.sound_selected.setMedia(m)
-        #self.visualization()
+        self.visualization()
 
         if not self.flag_any_audio_file_selected:
             self.ui.pushButton_6.setDisabled(False)
