@@ -14,7 +14,7 @@ def speed_control(input_wav_file,  speed):
         if speed != 1:
             new_chunk_size = int(chunk_size * speed)
             new_sample_rate = int(sample_rate * speed)
-            new_byte_rate = int(new_sample_rate * num_channel * bytes_per_sample)
+            new_byte_rate = int(new_sample_rate * num_channel * bytes_per_sample / 8)
             new_header = header
             new_header[4:8] = new_chunk_size.to_bytes(4, 'little')
             new_header[24:28] = new_sample_rate.to_bytes(4, 'little')
