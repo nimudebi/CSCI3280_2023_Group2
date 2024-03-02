@@ -15,6 +15,8 @@ from audio_change_start_end import audio_change_start_end as cut
 import pyaudio
 from write_wav_file import write_wav_file
 from playback_and_speed_control import speed_control
+from audio_visualization_fixed import audio_visualization_fixed
+from tone_editing import tone_editing
 
 
 def center_display(w):
@@ -22,7 +24,6 @@ def center_display(w):
     x = cptr.x() - w.width() // 2
     y = cptr.y() - w.height() // 2
     w.move(x, y)
-
 
 
 class LoginWindow(QDialog):
@@ -85,13 +86,13 @@ def count_files(path):
 class SoundRecorder(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.m_flag=False
+        self.m_flag = False
         self.timing = QTimer()
         self.filepath = None
         self.filename = None
         self.sound_player = QMediaPlayer()
 
-        self.speed=1
+        self.speed = 1
         self.sound_selected_filepath = None
         self.sound_selected_filename = None
         self.sound_selected = QMediaPlayer()
@@ -118,6 +119,8 @@ class SoundRecorder(QMainWindow):
         self.ui.pushButton_5.setEnabled(False)
         self.ui.pushButton_2.setEnabled(False)
 
+        self.editing_window=None
+
         # Added by Yitian
         # Switch to the previous and next audio file buttons
         self.ui.pushButton_6.clicked.connect(self.switch_to_previous_audio)
@@ -140,7 +143,7 @@ class SoundRecorder(QMainWindow):
         # attributes of speech-to-text window
         self.speech_to_text_window = None
         self.audio_cropping_window = None
-        self.change_label=False
+        self.change_label = False
         self.playing = False
         self.pre_music_index = 0
         self.ui.pushButton_5.clicked.connect(self.play_change)
@@ -165,7 +168,7 @@ class SoundRecorder(QMainWindow):
     def speed1(self):
         if self.filepath:
             self.speed = 0.5
-            speed_control(self.filepath,0.5)
+            speed_control(self.filepath, 0.5)
 
     def speed2(self):
         self.speed = 1
@@ -179,16 +182,17 @@ class SoundRecorder(QMainWindow):
         # To be implement
         # self.ui.pushButton_8.clicked.connect(self.volume_adjust)
         # self.volume_line.valueChanged.connect(self.volume_adjust)
+
     def overwrite(self):
         start_time = self.ui.horizontalSlider_3.value() // 1000
 
     def cut_audio(self):
-        start_time=self.ui.horizontalSlider_3.value()//1000
-        end_time=self.ui.horizontalSlider_2.value()//1000
-        if(start_time>=end_time):
+        start_time = self.ui.horizontalSlider_3.value() // 1000
+        end_time = self.ui.horizontalSlider_2.value() // 1000
+        if (start_time >= end_time):
             QMessageBox.critical(self, "Error", f"An error occurred: start time should less than end time")
             return
-        header,audio_data_new=cut(self.sound_selected_filepath, start_time, end_time)
+        header, audio_data_new = cut(self.sound_selected_filepath, start_time, end_time)
         save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
         if save_path:
             with open(save_path, 'wb') as wav_out:
@@ -202,12 +206,11 @@ class SoundRecorder(QMainWindow):
                 self.sound_selected_filename = item.text()
                 self.sound_selected_filepath = item.data(Qt.UserRole)
 
-
             context_menu = QMenu(self)
-            trim_action = QAction("Audio Trim", self)
-            # TODO：添加trim函数
-            # trim_action.triggered.connect(self.)
-            # context_menu.addAction(trim_action)
+            tone_changing_action = QAction("Tone Changing", self)
+            tone_changing_action.triggered.connect(self.open_editing_window)
+            context_menu.addAction(tone_changing_action)
+
             s2t_action = QAction("Speech to Text", self)
             s2t_action.triggered.connect(self.open_speech_to_text_window)
             context_menu.addAction(s2t_action)
@@ -241,7 +244,6 @@ class SoundRecorder(QMainWindow):
             self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
             self.ui.horizontalSlider_3.setValue(0)
 
-
     def playing_adjusting(self, position):
         self.sound_player.pause()
         self.sound_player.setPosition(position)
@@ -253,7 +255,7 @@ class SoundRecorder(QMainWindow):
     def final(self, status):
         if status == QMediaPlayer.EndOfMedia:
             self.play_change()
-            self.final_flag=True
+            self.final_flag = True
 
     def load_audio(self):
         file_dialog = QFileDialog()
@@ -265,12 +267,30 @@ class SoundRecorder(QMainWindow):
                 item.setData(Qt.UserRole, filename)
                 self.ui.listWidget.addItem(item)
 
+    def visualization(self):
+        audio_image = audio_visualization_fixed(self.sound_selected_filepath)
+        # 将图像数据转换为QImage对象
+        height, width, channel = audio_image.shape
+        bytes_per_line = channel * width
+        qimage = QImage(audio_image.data, width, height, bytes_per_line, QImage.Format_RGB888)
+        pixmap = QPixmap.fromImage(qimage)
+
+        # 设置QLabel的图像
+        self.ui.label_2.setPixmap(pixmap)
+        self.ui.label_2.setScaledContents(True)
+        self.ui.label_2.setAlignment(Qt.AlignCenter)
+
+        # 设置QLabel的aspectRatioMode属性为保持比例缩放
+        self.ui.label_2.setScaledContents(True)
+        self.ui.label_2.setPixmap(pixmap.scaled(self.ui.label_2.size(), Qt.AspectRatioMode.KeepAspectRatio))
+
     def audio_selected(self, item):
         self.change_label = False
         self.sound_selected_filename = item.text()
         self.sound_selected_filepath = item.data(Qt.UserRole)
         m = QMediaContent(QUrl.fromLocalFile(self.sound_selected_filepath))
         self.sound_selected.setMedia(m)
+        #self.visualization()
 
         if not self.flag_any_audio_file_selected:
             self.ui.pushButton_6.setDisabled(False)
@@ -292,12 +312,13 @@ class SoundRecorder(QMainWindow):
 
     def play_change(self):
         if self.final_flag:
-            self.final_flag=False
+            self.final_flag = False
             if self.speed != 1:
                 filename = f"{self.filename}_{self.speed}.wav"
                 self.filepath = os.path.join(os.getcwd(), filename)
                 media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
                 self.sound_player.setMedia(media_content)
+
         if self.playing:
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -336,7 +357,7 @@ class SoundRecorder(QMainWindow):
                             channels=1,
                             rate=44100,
                             input=True,
-                            frames_per_buffer=4*1024,
+                            frames_per_buffer=4 * 1024,
                             stream_callback=self.callback)
         return stream
 
@@ -348,8 +369,7 @@ class SoundRecorder(QMainWindow):
         save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
         if save_path:
             audio = pyaudio.PyAudio()
-            write_wav_file(save_path,b''.join(self.frames))
-
+            write_wav_file(save_path, b''.join(self.frames))
 
     # Added by Yitian
     # Switch to the previous and next audio file
@@ -396,6 +416,149 @@ class SoundRecorder(QMainWindow):
                 self.move(mouse_event.globalPos() - self.m_Position)
                 mouse_event.accept()
 
+    def open_editing_window(self):
+        if self.editing_window is None:
+            self.editing_window = QWidget()
+            self.editing_window.setObjectName("editing_window")
+            self.editing_window.changed_pitch = 0
+            self.editing_window.warning_message_text = ""
+            self.editing_window.generated_filename = ""
+            self.editing_window.generated_filepath = ""
+            self.editing_window.setStyleSheet("""
+                        #editing_window{
+                            border:none;
+                            background-color:rgb(224, 254, 255);
+                            background-image: url(./designer/2.png);
+                        } 
+                        QPushButton{
+                            background-color: rgba(215, 255, 210,20);
+                            border:none;
+                            border-radius:11px;
+                            font:  15px;
+                            color: white;
+                        }
+                        QLabel{
+                            border:none;
+                        }    
+                        QTextEdit{
+                            border:none;
+                        }
+
+
+
+
+
+                        """)
+
+            # Selected file name
+            selected_file_name = QLabel(self.editing_window)
+            selected_file_name.setGeometry(150, 30, 500, 30)
+            selected_file_name.setObjectName("selected_file_name")
+            displayed_file_name = self.sound_selected_filename
+            print("displayed file name: ", displayed_file_name)
+            if len(displayed_file_name) >= 30:
+                displayed_file_name = displayed_file_name[0, 19] + "..." + displayed_file_name[-7,]
+            selected_file_name.setText("Selected file name: " + displayed_file_name)
+
+            # editing parameter
+            # input_layout=QVBoxLayout()
+            editing_param = QTextEdit(self.editing_window)
+            font = QFont("Arial", 12)
+            editing_param.setFont(font)
+            editing_param.setPlaceholderText("Pitch to shift...")
+
+            editing_param.setGeometry(50, 90, 200, 40)
+            editing_param.setObjectName("editing_param")
+            # input_layout.addWidge(editing_param)
+
+            # Increment and decreament pitch
+            increment_button = QPushButton(self.editing_window)
+            increment_button.setGeometry(275, 90, 25, 18)
+            increment_button.setText("+")
+            increment_button.clicked.connect(self.increment_pitch)
+            decrement_button = QPushButton(self.editing_window)
+            decrement_button.setGeometry(275, 112, 25, 18)
+            decrement_button.setText("-")
+            decrement_button.clicked.connect(self.decrement_pitch)
+
+            # a button to confirm input
+            confirm_button = QPushButton(self.editing_window)
+            confirm_button.setGeometry(450, 95, 100, 30)
+            confirm_button.setText("Confirm")
+            confirm_button.clicked.connect(self.handleConfirm)
+
+            # Warning message
+            warning_message = QLabel(self.editing_window)
+            warning_message.setGeometry(50, 145, 500, 20)
+            warning_message.setObjectName("warning_message")
+            # warning_message.setText(self.editing_window.warning_message_text)
+
+            # Generated file name
+            generated_file_name = QLabel(self.editing_window)
+            generated_file_name.setGeometry(50, 180, 500, 30)
+            generated_file_name.setObjectName("generated_file_name")
+
+            # Save the generated file button
+            save_button = QPushButton(self.editing_window)
+            save_button.setGeometry(450, 240, 100, 30)
+            save_button.setText("Save")
+            save_button.setObjectName("save_button")
+            save_button.clicked.connect(self.handleSave)
+
+            # show the window
+            self.editing_window.setGeometry(100, 100, 600, 300)
+            self.editing_window.setWindowTitle("Audio Pitch Changing")
+            self.editing_window.show()
+
+        else:
+            self.editing_window.show()
+
+    def increment_pitch(self):
+        editing_param = self.editing_window.findChild(QTextEdit, "editing_param")
+        editing_param_text = editing_param.toPlainText()
+        editing_param_int = 0
+        try:
+            editing_param_int = int(editing_param_text)
+            editing_param_int += 1
+            editing_param_text = str(editing_param_int)
+        except ValueError:
+            editing_param_text = "0"
+
+        editing_param.setText(editing_param_text)
+
+    def decrement_pitch(self):
+        editing_param = self.editing_window.findChild(QTextEdit, "editing_param")
+        editing_param_text = editing_param.toPlainText()
+        editing_param_int = 0
+        try:
+            editing_param_int = int(editing_param_text)
+            editing_param_int -= 1
+            editing_param_text = str(editing_param_int)
+        except ValueError:
+            editing_param_text = "0"
+
+        editing_param.setText(editing_param_text)
+
+    def handleSave(self):
+        generated_file_name = self.editing_window.findChild(QLabel, "generated_file_name")
+        editing_param = self.editing_window.findChild(QTextEdit, "editing_param")
+        editing_param_text = int(editing_param.toPlainText())
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
+        if save_path:
+            tone_editing(self.sound_selected_filepath, editing_param_text, save_path)
+
+    # handle confirm: whether the shifting_pitch text button is receiving correct input
+    def handleConfirm(self):
+        editing_param = self.editing_window.findChild(QTextEdit, "editing_param")
+        editing_param_text = editing_param.toPlainText()
+        warning_message = self.editing_window.findChild(QLabel, "warning_message")
+        try:
+            self.text = int(editing_param_text)
+            warning_message.setText("Successfully set shifting pitch.")
+        except ValueError:
+            warning_message.setText("Invalid shifting pitch, please enter a valid integer.")
+
+
     def start_transcription(self):
         transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
         try:
@@ -428,11 +591,11 @@ class SoundRecorder(QMainWindow):
             QTextEdit{
                 border:none;
             }
-                
-                
-                
-                
-                
+
+
+
+
+
             """)
             # selected file name
             selected_file_name = QLineEdit(self.speech_to_text_window)
@@ -440,10 +603,13 @@ class SoundRecorder(QMainWindow):
             selected_file_name.setReadOnly(True)
             selected_file_name.setObjectName("selected_file_name")
             selected_file_name.setText(self.sound_selected_filename)
+            font = QFont("Arial", 10)
+            selected_file_name.setFont(font)
 
             # start transcribing button
             transcribe_button = QPushButton(self.speech_to_text_window)
             transcribe_button.setText("Transcribe")
+
             transcribe_button.setGeometry(450, 30, 100, 30)
             transcribe_button.clicked.connect(self.start_transcription)
 
@@ -464,7 +630,6 @@ class SoundRecorder(QMainWindow):
             transcript_area = self.speech_to_text_window.findChild(QTextEdit, "transcript_area")
             transcript_area.setText("")
             self.speech_to_text_window.show()
-
 
 
 if __name__ == "__main__":
