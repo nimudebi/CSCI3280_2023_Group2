@@ -3,21 +3,22 @@ import wave
 
 def speed_control(input_wav_file,  speed):
     with open(input_wav_file, 'rb') as input_file:
-        header = input_file.read(44)
+        header = bytearray(input_file.read(44))
         data = input_file.read()
-        chunk_size = int.from_bytes(header[4:8], byteorder='little')
-        sample_rate = int.from_bytes(header[24:28], byteorder='little')
-        # byte_rate = int.from_bytes(header[28:30], byteorder='little')
+        chunk_size = int.from_bytes(header[4:8], 'little')
+        num_channel = int.from_bytes(header[22:24],'little')
+        sample_rate = int.from_bytes(header[24:28], 'little')
+        bytes_per_sample = int.from_bytes(header[34:36], 'little')
 
         # Modify header for new frame rate
         if speed != 1:
             new_chunk_size = int(chunk_size * speed)
             new_sample_rate = int(sample_rate * speed)
-            # new_byte_rate = byte_rate * speed
-            new_header = bytearray(header)
-            new_header[4:8] = new_chunk_size.to_bytes(4, byteorder='little')
-            new_header[24:28] = new_sample_rate.to_bytes(4, byteorder='little')
-            # new_header[28:30] = new_byte_rate.to_bytes(2, byteorder='little')
+            new_byte_rate = int(new_sample_rate * num_channel * bytes_per_sample)
+            new_header = header
+            new_header[4:8] = new_chunk_size.to_bytes(4, 'little')
+            new_header[24:28] = new_sample_rate.to_bytes(4, 'little')
+            new_header[28:32] = new_byte_rate.to_bytes(4, 'little')
         elif speed == 1:
             new_header = header
         with open('output_wav_file.wav', 'wb') as output_file:
