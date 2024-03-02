@@ -244,14 +244,13 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider.setRange(0, duration)
         self.ui.horizontalSlider.setValue(position)
         self.ui.horizontalSlider.setDisabled(False)
-
+        self.ui.horizontalSlider_2.setDisabled(False)
+        self.ui.horizontalSlider_3.setDisabled(False)
         if self.change_label is not True:
             self.change_label = True
-            self.ui.horizontalSlider_2.setDisabled(False)
-            self.ui.horizontalSlider_3.setDisabled(False)
-            self.ui.horizontalSlider_2.setRange(0, self.sound_player.duration())
-            self.ui.horizontalSlider_3.setRange(0, self.sound_player.duration())
-            self.ui.horizontalSlider_2.setValue(self.sound_player.duration())
+            self.ui.horizontalSlider_2.setRange(0, self.sound_selected.duration())
+            self.ui.horizontalSlider_3.setRange(0, self.sound_selected.duration())
+            self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
             self.ui.horizontalSlider_3.setValue(0)
 
     def playing_adjusting(self, position):
