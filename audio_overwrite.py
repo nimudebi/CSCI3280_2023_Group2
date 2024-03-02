@@ -80,7 +80,6 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
     '''
     # store new data into new wav file
     with open(output_file, 'wb') as wav_out:
-        print("start outputing\n")
         wav_out.write(header_in)
         wav_out.write(audio_data_new)
     # print("finish saving trimming data\n")
