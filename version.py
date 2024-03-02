@@ -421,7 +421,7 @@ class Ui_MainWindow(object):
         self.toolButton.setMaximumSize(QtCore.QSize(45, 45))
         self.toolButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.toolButton.setMouseTracking(True)
-        self.toolButton.setText("")
+        self.toolButton.setToolTip("Switch audio playback speed")
         self.toolButton.setObjectName("toolButton")
         self.toolButton.setText("")
         icon100 = QtGui.QIcon()
