@@ -21,7 +21,7 @@ def speed_control(input_wav_file,  speed):
             new_header[28:32] = new_byte_rate.to_bytes(4, 'little')
         elif speed == 1:
             new_header = header
-        with open('output_wav_file.wav', 'wb') as output_file:
+        with open(f'{input_wav_file}_{speed}.wav', 'wb') as output_file:
             output_file.write(new_header)
             output_file.write(data)
 
