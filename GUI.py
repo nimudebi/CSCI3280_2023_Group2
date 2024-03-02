@@ -12,6 +12,7 @@ import qtawesome as qta
 from version import *
 from speech_to_text import speech_to_text
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from audio_overwrite import audio_overwrite as trim
 from audio_change_start_end import audio_change_start_end as cut
 import pyaudio
 from write_wav_file import write_wav_file
@@ -314,7 +315,7 @@ class SoundRecorder(QMainWindow):
     def play_change(self):
         if self.speed != 1:
             filename = f"{self.filename}_{self.speed}.wav"
-            self.filepath = os.path.join(os.getcwd(), filename)
+            self.filepath = os.path.join(os.path.dirname(self.filepath), filename)
             media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
             self.sound_player.setMedia(media_content)
 
