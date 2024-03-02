@@ -190,7 +190,7 @@ class SoundRecorder(QMainWindow):
         # self.volume_line.valueChanged.connect(self.volume_adjust)
 
     def overwrite(self):
-        start_time = self.ui.horizontalSlider_2.value() // 1000
+        start_time = self.ui.horizontalSlider_3.value() // 1000
         fresh_recording = self.sound_selected_filepath
         input_path = self.filepath
 
