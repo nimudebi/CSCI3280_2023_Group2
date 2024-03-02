@@ -17,12 +17,14 @@ def audio_visualization_fixed(audio_file):
     # generate time axis
     time=np.linspace(0,duration,num=len(signal))
     # plot the audio waveform
-    plt.figure(figsize=(10,4))
-    plt.plot(time,signal,color='black')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Amplitude')
-    plt.title('Audio Waveform')
-    plt.grid(True)
-    plt.show()
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(time, signal, color='black')
+    ax.set(xlabel='Time (s)', ylabel='Amplitude', title='Audio Waveform')
+    ax.grid(True)
 
-# audio_visualization_fixed("D:\CUHK\Y2T2\csci3280\proj\phase1\CantinaBand3.wav")
+    # Convert the plot to an image
+    fig.canvas.draw()
+    image = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+
+    return image
