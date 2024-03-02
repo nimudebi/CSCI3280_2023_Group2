@@ -1,4 +1,4 @@
-def write_wav_file(filename, audio_data, sample_rate):
+def write_wav_file(filename, audio_data, sample_rate=44100):
     # WAV file header constants
     chunk_id = b"RIFF"
     format_type = b"WAVE"
