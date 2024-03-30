@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>453</width>
+    <height>840</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="styleSheet">
+       <string notr="true">#frame{
+	background-image: url(./designer/2.png);
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QWidget" name="widget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>2</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">#widget{
+	background-color:rgba(24, 23, 23, 0)
+}</string>
+         </property>
+         <widget class="QLabel" name="label">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>0</y>
+            <width>81</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>designer/gg.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_2">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>90</y>
+            <width>211</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Algerian</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#label_2{
+	color: white;
+}</string>
+          </property>
+          <property name="text">
+           <string>P2P Chat Room</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::MarkdownText</enum>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="frame_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">#pushButton{
+	background-image: url(./designer/1.png);
+}
+#pushButton:hover {
+    background-color:rgb(71, 68, 68);
+}
+#pushButton:pressed {
+    background-color: #CCCCCC;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>designer/plus-solid.svg</normaloff>designer/plus-solid.svg</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_2">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">#pushButton_2{
+	background-image: url(./designer/1.png);
+}
+#pushButton_2:hover {
+    background-color:rgb(71, 68, 68);
+}
+#pushButton_2:pressed {
+    background-color: #CCCCCC;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>designer/arrows-rotate-solid.svg</normaloff>designer/arrows-rotate-solid.svg</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="listWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>7</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QListWidget {
+	font: 13pt &quot;Cooper Black&quot;;
+	background-color:rgba(255, 255, 255,0);
+	border: none;
+}
+
+QListWidget::item {
+	color: white;  
+}
+
+QListWidget::item:selected {
+    background-color:rgb(29, 28, 28);
+	border: 1px solid white; 
+	border-radius: 22px;
+
+}
+
+QListWidget::item:hover { 
+    color: rgb(61, 56, 55);
+}
+
+QListView::item {
+    height: 50px;
+	border: 1px solid white; 
+	border-radius: 22px;
+}</string>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+         </property>
+         <property name="resizeMode">
+          <enum>QListView::Adjust</enum>
+         </property>
+         <property name="gridSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
