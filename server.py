@@ -2,10 +2,21 @@ import socket
 import threading
 import random
 
+
+def get_private_ip():
+    def get_private(item):
+        return item != '127.0.0.1'
+
+    hostname = socket.gethostname()
+    a = socket.gethostbyname_ex(hostname)
+    ip_address = filter(get_private, a[2])
+    return list(ip_address)[0]
+
+
 class Server:
-    def __init__(self,room_name):
-        self.ip = socket.gethostbyname(socket.gethostname())
-        self.name=room_name
+    def __init__(self, room_name):
+        self.ip = get_private_ip()
+        self.name = room_name
         while True:
             try:
                 self.port = random.randint(1024, 65535)
@@ -27,6 +38,7 @@ class Server:
         self.s.close()
         for connection in self.connections:
             connection.close()
+
     def accept_connections(self):
         self.s.listen(100)
 
@@ -53,7 +65,7 @@ class Server:
         while self.running:
             try:
                 data = c.recv(1024)
-                print(data)
+                # print(data)
                 self.broadcast(c, data)
 
             except socket.error:
