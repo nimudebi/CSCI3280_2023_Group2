@@ -39,6 +39,11 @@ class Server:
         for connection in self.connections:
             connection.close()
 
+    def handle_broadcast(self, data, addr):
+        if data.decode() == 'DISCOVER':
+            response = f'{self.name},{self.ip},{self.port}'.encode()
+            self.s.sendto(response, addr)
+
     def accept_connections(self):
         self.s.listen(100)
 
@@ -67,6 +72,7 @@ class Server:
                 data = c.recv(1024)
                 # print(data)
                 self.broadcast(c, data)
+                self.handle_broadcast(data, addr)
 
             except socket.error:
                 c.close()
