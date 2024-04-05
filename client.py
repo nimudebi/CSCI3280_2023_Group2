@@ -43,14 +43,13 @@ class Client:
         self.running = False
         self.s.close()
 
-
     def receive_server_data(self):
         while self.running:
             try:
                 data = self.s.recv(1024)
                 self.playing_stream.write(data)
             except:
-                pass
+                print('gee-receive')
 
     def send_data_to_server(self):
         while self.running:
@@ -58,11 +57,11 @@ class Client:
                 data = self.recording_stream.read(1024)
                 self.s.sendall(data)
             except:
-                pass
+                print("gee-send")
 
 
 if __name__ == "__main__":
-    ip = "42.200.120.73"
-    port = 43042
+    ip = "192.168.20.42"
+    port = 10391
     client = Client(ip, port)
     client.start()
