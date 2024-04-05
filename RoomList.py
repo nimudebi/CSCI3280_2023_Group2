@@ -1,4 +1,5 @@
-
+# 大傻福又开始写代码咯^_^
+# 看看他今天能写出什么答辩^_^
 import sys
 import os
 import socket
@@ -14,22 +15,20 @@ from roomlistUI import *
 from server_discovery import ServerDiscovery
 from server import Server
 from client import Client
-from ChatBox import ChatBox
+
 
 class ChatRoom(QMainWindow):
-    def __init__(self,username):
+    def __init__(self):
         super().__init__()
-        self.username=username
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         self.ui.pushButton.clicked.connect(self.add_chat_room)
-        #self.ui.pushButton_2.clicked.connect(self.server_found_start)
+        self.ui.pushButton_2.clicked.connect(self.server_found_start)
         self.ui.listWidget.itemDoubleClicked.connect(self.enter_chat_room)
         self.dialog = QInputDialog(self)
         self.servers = []
         self.discovery = ServerDiscovery()
-        #self.discovery.server_found.connect(self.handle_server_found)
+        self.discovery.server_found.connect(self.handle_server_found)
 
     def server_found_start(self):
         threading.Thread(target=self.discovery.discover_servers).start()
@@ -46,21 +45,15 @@ class ChatRoom(QMainWindow):
         item.setData(QtCore.Qt.UserRole, (name, ip, port))
         item.setTextAlignment(QtCore.Qt.AlignCenter)
         self.ui.listWidget.addItem(item)
+
     def enter_chat_room(self, item):
         server = item.data(QtCore.Qt.UserRole)
         name=server[0]
         ip = server[1]
         port = server[2]
-        client = Client(ip, port,self.username)
-        client.start()
-        self.chatbox = ChatBox(client,None)
-        self.chatbox.show()
-
-        user = QListWidgetItem(self.username)
-        user.setData(QtCore.Qt.UserRole, self.username)
-        user.setTextAlignment(QtCore.Qt.AlignCenter)
-        self.chatbox.ui.listWidget.addItem(user)
-
+        client = Client(ip, port)
+        #client.start()
+        # 添加一个进入的gui
 
     def add_chat_room(self):
         self.dialog.setInputMode(QInputDialog.TextInput)
@@ -97,15 +90,9 @@ class ChatRoom(QMainWindow):
                     server.start()
                     item = QListWidgetItem(room_name)
                     item.setData(QtCore.Qt.UserRole, server.getinfo())
+                    # 弹出一个聊天框窗口
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                     self.ui.listWidget.addItem(item)
-                    self.chatbox = ChatBox(None, server)
-                    self.chatbox.show()
-                    user = QListWidgetItem(self.username)
-                    user.setData(QtCore.Qt.UserRole, self.username)
-                    user.setTextAlignment(QtCore.Qt.AlignCenter)
-                    self.chatbox.ui.listWidget.addItem(user)
-
 
     # 似乎有个bug，关闭的时候会提示OSError: [WinError 10038] 在一个非套接字上尝试了一个操作。不过目前还没啥影响
     def closeEvent(self, event):
@@ -116,6 +103,6 @@ class ChatRoom(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    chat_app = ChatRoom("yes")
+    chat_app = ChatRoom()
     chat_app.show()
     sys.exit(app.exec_())
