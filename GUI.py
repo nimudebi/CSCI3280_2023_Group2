@@ -50,8 +50,9 @@ class LoginWindow(QDialog):
             self.accept()
         else:
             QMessageBox.information(self, "Error!", f"Login Failed! Invalid username or password!")
-
         '''
+    def get_info(self):
+        return self.name_input.text()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -59,6 +60,7 @@ if __name__ == "__main__":
     login_window = LoginWindow()
     login_window.show()
     if login_window.exec_() == LoginWindow.Accepted:
-        w = ChatRoom()
+        username=login_window.get_info()
+        w = ChatRoom(username)
         w.show()
     sys.exit(app.exec_())
