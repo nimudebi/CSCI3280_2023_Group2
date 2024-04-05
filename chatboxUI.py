@@ -35,7 +35,41 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.listWidget.sizePolicy().hasHeightForWidth())
         self.listWidget.setSizePolicy(sizePolicy)
+        self.listWidget.setStyleSheet("QListWidget {\n"
+"    font: 13pt \"Cooper Black\";\n"
+"    background-color:qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0.0597015 rgba(22, 14, 116, 255), stop:0.507463 rgba(19, 11, 99, 255), stop:0.925373 rgba(0, 0, 0, 255));\n"
+"    border: none;\n"
+"}\n"
+"\n"
+"QListWidget::item {\n"
+"    color: white;  \n"
+"}\n"
+"\n"
+"QListWidget::item:selected {\n"
+"    background-color:rgb(29, 28, 28);\n"
+"    border: 1px solid white; \n"
+"    border-radius: 22px;\n"
+"\n"
+"}\n"
+"\n"
+"QListWidget::item:hover { \n"
+"    color: rgb(61, 56, 55);\n"
+"}\n"
+"\n"
+"QListView::item {\n"
+"    height: 50px;\n"
+"    border: 1px solid white; \n"
+"    border-radius: 22px;\n"
+"}")
         self.listWidget.setObjectName("listWidget")
+        item = QtWidgets.QListWidgetItem()
+        self.listWidget.addItem(item)
+        item = QtWidgets.QListWidgetItem()
+        self.listWidget.addItem(item)
+        item = QtWidgets.QListWidgetItem()
+        self.listWidget.addItem(item)
+        item = QtWidgets.QListWidgetItem()
+        self.listWidget.addItem(item)
         self.horizontalLayout_2.addWidget(self.listWidget)
         self.widget = QtWidgets.QWidget(self.frame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
@@ -62,6 +96,7 @@ class Ui_MainWindow(object):
         self.widget_2.setObjectName("widget_2")
         self.pushButton_4 = QtWidgets.QPushButton(self.widget_2)
         self.pushButton_4.setGeometry(QtCore.QRect(640, 0, 81, 40))
+        self.pushButton_4.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_4.setStyleSheet("")
         self.pushButton_4.setText("")
         icon = QtGui.QIcon()
@@ -70,6 +105,7 @@ class Ui_MainWindow(object):
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_5 = QtWidgets.QPushButton(self.widget_2)
         self.pushButton_5.setGeometry(QtCore.QRect(730, 0, 81, 40))
+        self.pushButton_5.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_5.setStyleSheet("")
         self.pushButton_5.setText("")
         icon1 = QtGui.QIcon()
@@ -78,6 +114,7 @@ class Ui_MainWindow(object):
         self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_6 = QtWidgets.QPushButton(self.widget_2)
         self.pushButton_6.setGeometry(QtCore.QRect(550, 0, 81, 40))
+        self.pushButton_6.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_6.setText("")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("designer/record-vinyl-solid-white.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -123,6 +160,7 @@ class Ui_MainWindow(object):
         self.pushButton_3 = QtWidgets.QPushButton(self.widget_3)
         self.pushButton_3.setMinimumSize(QtCore.QSize(38, 38))
         self.pushButton_3.setMaximumSize(QtCore.QSize(38, 38))
+        self.pushButton_3.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_3.setStyleSheet("#pushButton_3{\n"
 "    background-color:rgb(20, 20, 20);\n"
 "    border:none;\n"
@@ -137,6 +175,7 @@ class Ui_MainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.widget_3)
         self.pushButton.setMinimumSize(QtCore.QSize(38, 38))
         self.pushButton.setMaximumSize(QtCore.QSize(38, 38))
+        self.pushButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton.setStyleSheet("#pushButton{\n"
 "    background-color:rgb(20, 20, 20);\n"
 "    border:none;\n"
@@ -155,6 +194,7 @@ class Ui_MainWindow(object):
         self.pushButton_2 = QtWidgets.QPushButton(self.widget_3)
         self.pushButton_2.setMinimumSize(QtCore.QSize(70, 38))
         self.pushButton_2.setMaximumSize(QtCore.QSize(70, 38))
+        self.pushButton_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_2.setStyleSheet("#pushButton_2{\n"
 "    background-color:rgb(20, 20, 20);\n"
 "    border:none;\n"
@@ -180,4 +220,15 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        __sortingEnabled = self.listWidget.isSortingEnabled()
+        self.listWidget.setSortingEnabled(False)
+        item = self.listWidget.item(0)
+        item.setText(_translate("MainWindow", "新建项目"))
+        item = self.listWidget.item(1)
+        item.setText(_translate("MainWindow", "新建项目"))
+        item = self.listWidget.item(2)
+        item.setText(_translate("MainWindow", "新建项目"))
+        item = self.listWidget.item(3)
+        item.setText(_translate("MainWindow", "新建项目"))
+        self.listWidget.setSortingEnabled(__sortingEnabled)
         self.label.setText(_translate("MainWindow", "TextLabel"))
