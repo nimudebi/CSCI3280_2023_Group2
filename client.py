@@ -68,7 +68,7 @@ class Client:
 
 
 if __name__ == "__main__":
-    ip = "192.168.20.42"
-    port = 10391
+    ip = "192.168.92.246"
+    port = 10514
     client = Client(ip, port,"yes")
     client.start()

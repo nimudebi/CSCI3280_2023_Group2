@@ -11,7 +11,7 @@ class CentralServer:
         try:
             self.socket.bind((CENTRAL_SERVER_IP, CENTRAL_SERVER_PORT))
         except OSError:
-            print("Failed to bind the socket:", e)
+            print("Failed to bind the socket:")
             self.socket.close()
             return
 

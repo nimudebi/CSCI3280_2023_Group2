@@ -2,7 +2,7 @@ import socket
 import threading
 import random
 
-CENTRAL_SERVER_IP = "10.13.157.70"
+CENTRAL_SERVER_IP = "192.168.74.42"
 CENTRAL_SERVER_PORT = 9999
 
 

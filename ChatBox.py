@@ -18,6 +18,8 @@ from client import Client
 
 
 class ChatBox(QMainWindow):
+    remove_chatbox = pyqtSignal(str)
+
     def __init__(self,client,server):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -27,9 +29,14 @@ class ChatBox(QMainWindow):
 
     def closeEvent(self, event):
         try:
-            self.client.stop()
+            if self.server:
+                self.server.stop()
+                self.remove_chatbox.emit(self.server.getinfo()[0])
+            if self.client:
+                self.client.stop()
         except:
             event.accept()
+
 
 
 

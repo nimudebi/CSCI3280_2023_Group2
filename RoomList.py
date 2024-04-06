@@ -24,12 +24,12 @@ class ChatRoom(QMainWindow):
         self.ui.setupUi(self)
 
         self.ui.pushButton.clicked.connect(self.add_chat_room)
-        #self.ui.pushButton_2.clicked.connect(self.server_found_start)
+        self.ui.pushButton_2.clicked.connect(self.server_found_start)
         self.ui.listWidget.itemDoubleClicked.connect(self.enter_chat_room)
         self.dialog = QInputDialog(self)
         self.servers = []
         self.discovery = ServerDiscovery()
-        #self.discovery.server_found.connect(self.handle_server_found)
+        self.discovery.server_found.connect(self.handle_server_found)
 
     def server_found_start(self):
         threading.Thread(target=self.discovery.discover_servers).start()
@@ -46,6 +46,11 @@ class ChatRoom(QMainWindow):
         item.setData(QtCore.Qt.UserRole, (name, ip, port))
         item.setTextAlignment(QtCore.Qt.AlignCenter)
         self.ui.listWidget.addItem(item)
+
+    def handle_server_removed(self, name):
+        item_to_remove = self.ui.listWidget.findItems(name, QtCore.Qt.MatchExactly)[0]
+        self.ui.listWidget.takeItem(self.ui.listWidget.row(item_to_remove))
+
     def enter_chat_room(self, item):
         server = item.data(QtCore.Qt.UserRole)
         name=server[0]
@@ -105,7 +110,12 @@ class ChatRoom(QMainWindow):
                     item.setData(QtCore.Qt.UserRole, server.getinfo())
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                     self.ui.listWidget.addItem(item)
+
+                    client = Client(server.getinfo()[1], server.getinfo()[2], self.username)
+                    client.start()
+
                     self.chatbox = ChatBox(None, server)
+                    self.chatbox.remove_chatbox.connect(self.handle_server_removed)
                     self.chatbox.show()
                     user = QListWidgetItem(self.username)
                     user.setData(QtCore.Qt.UserRole, self.username)

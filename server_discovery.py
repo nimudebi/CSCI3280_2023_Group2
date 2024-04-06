@@ -26,6 +26,9 @@ class ServerDiscovery(QObject):
             client_socket.close()
 
         print(server_list)
-        '''for response in responses:
-            name, ip, received_port = response[0].split(',')
-            self.server_found.emit(name, ip, int(received_port))'''
+        if len(server_list[0]) == 3:
+            for server in server_list:
+                name = server[0]
+                ip = server[1]
+                server_port = server[2]
+                self.server_found.emit(name, ip, int(server_port))
