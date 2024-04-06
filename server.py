@@ -2,7 +2,7 @@ import socket
 import threading
 import random
 
-CENTRAL_SERVER_IP = "192.168.74.42"
+CENTRAL_SERVER_IP = "10.13.157.70"
 CENTRAL_SERVER_PORT = 9999
 
 
@@ -20,6 +20,7 @@ class Server:
     def __init__(self, room_name):
         self.ip = get_private_ip()
         self.name = room_name
+        self.users=[]
         while True:
             try:
                 self.port = random.randint(10000, 11000)
@@ -55,9 +56,9 @@ class Server:
             self.connections.append(c)
             threading.Thread(target=self.handle_client, args=(c, addr,)).start()
 
-    def broadcast(self, data):
+    def broadcast(self,sock, data):
         for client in self.connections:
-            if client != self.s:
+            if client != self.s and client != sock:
                 try:
                     client.send(data.encode())
                 except:
@@ -70,7 +71,21 @@ class Server:
         while self.running:
             try:
                 data = c.recv(1024)
-                self.broadcast(c, data)
+                try:
+                    if data.decode()[:4] == 'FUCK':
+                        username=data.decode()[4:]
+                        print(username)
+                        self.users.append(username)
+                        print(self.connections)
+
+
+                    if data.decode()[:4] == 'DAMN':
+                        username = data.decode()[4:]
+                        self.connections.remove(c)
+                        self.users.remove(username)
+                        c.close()
+                except:
+                    self.broadcast(c, data)
             except:
                 c.close()
 
