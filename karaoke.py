@@ -17,7 +17,7 @@ def karaoke_bgm(input_num,input_file=None, bgm_dic = 'karaoke_bgm'):
     warning = "If you want to use karaoke function, please ensure that you have anaconda or miniconda on you PC"
     print(warning)
     os.system('conda install -c conda-forge ffmpeg libsndfile')
-    if(input_num > 0):
+    if(input_num >= 0):
         for i in range(10):
             if(i == input_num):
                 bgm_file = 'karaoke_bgm/' + str(i) + '.wav'
