@@ -39,9 +39,15 @@ class Client:
     def start(self):
         self.receive_thread.start()
         self.send_thread.start()
+        data = b'FUCK'+self.username.encode()
+        self.s.send(data)
+
+
 
     def stop(self):
         self.running = False
+        data = b'DAMN'+self.username.encode()
+        self.s.send(data)
         self.s.close()
 
     def receive_server_data(self):
@@ -50,19 +56,19 @@ class Client:
                 data = self.s.recv(1024)
                 self.playing_stream.write(data)
             except:
-                print('gee-receive')
+                pass
 
     def send_data_to_server(self):
         while self.running:
             try:
                 data = self.recording_stream.read(1024)
-                self.s.sendall(data)
+                self.s.send(data)
             except:
-                print("gee-send")
+                pass
 
 
 if __name__ == "__main__":
     ip = "192.168.20.42"
     port = 10391
-    client = Client(ip, port)
+    client = Client(ip, port,"yes")
     client.start()
