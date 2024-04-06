@@ -56,11 +56,11 @@ class Server:
             self.connections.append(c)
             threading.Thread(target=self.handle_client, args=(c, addr,)).start()
 
-    def broadcast(self,sock, data):
+    def broadcast(self, sock, data):
         for client in self.connections:
             if client != self.s and client != sock:
                 try:
-                    client.send(data.encode())
+                    client.send(data)
                 except:
                     pass
 

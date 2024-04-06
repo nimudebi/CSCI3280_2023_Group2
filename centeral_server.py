@@ -1,4 +1,6 @@
 import socket
+import signal
+import sys
 
 CENTRAL_SERVER_IP = "192.168.74.42"
 CENTRAL_SERVER_PORT = 9999
@@ -18,6 +20,7 @@ class CentralServer:
     def start(self):
         self.socket.listen(100)
         print("Central server started. Listening for connections...")
+        signal.signal(signal.SIGINT, self.signal_handler)
         while True:
             client_socket, address = self.socket.accept()
             print("Connection established with:", address)
@@ -40,6 +43,10 @@ class CentralServer:
         server_list_string = "\n".join(self.server_list)
         client_socket.send(server_list_string.encode())
 
+    def signal_handler(self, signal, frame):
+        print("Terminating the server...")
+        self.socket.close()
+        sys.exit(0)
 
 if __name__ == "__main__":
     central_server = CentralServer()

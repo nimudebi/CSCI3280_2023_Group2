@@ -39,9 +39,9 @@ class ChatRoom(QMainWindow):
         if existing_items:
             return
 
-        server = Server(name)
+        '''server = Server(name)
         self.servers.append(server)
-        server.start()
+        server.start()'''
         item = QListWidgetItem(name)
         item.setData(QtCore.Qt.UserRole, (name, ip, port))
         item.setTextAlignment(QtCore.Qt.AlignCenter)

@@ -25,7 +25,6 @@ class ServerDiscovery(QObject):
         finally:
             client_socket.close()
 
-        print(server_list)
         if len(server_list[0]) == 3:
             for server in server_list:
                 name = server[0]

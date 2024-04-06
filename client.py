@@ -62,7 +62,7 @@ class Client:
         while self.running:
             try:
                 data = self.recording_stream.read(1024)
-                self.s.send(data)
+                self.s.sendall(data)
             except:
                 pass
 
