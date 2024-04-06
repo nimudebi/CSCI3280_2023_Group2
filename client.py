@@ -4,9 +4,10 @@ import pyaudio
 
 
 class Client:
-    def __init__(self, ip, port):
+    def __init__(self, ip, port,username):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.running=True
+        self.username=username
 
         while 1:
             try:
