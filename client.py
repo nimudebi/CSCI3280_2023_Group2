@@ -4,7 +4,7 @@ import pyaudio
 import numpy as np
 import librosa
 from ChatBox import *
-import sounddevice as sd
+
 
 class Client:
     def __init__(self, ip, port,username):
@@ -54,33 +54,28 @@ class Client:
         self.s.send(data)
         self.s.close()
 
-    def receive_server_data(self):
+    def receive_server_data(self,close_voice):
         while self.running:
             try:
-                data = self.s.recv(1024)
-                if self.chatbox.close_audio:
+                if close_voice:
                     continue
-                else:
-                    self.playing_stream.write(data)
+                data = self.s.recv(1024)
+                self.playing_stream.write(data)
             except:
                 pass
 
-    def send_data_to_server(self):
+    def send_data_to_server(self,boy=False, girl=False,mute=False):
         while self.running:
             try:
                 data = self.recording_stream.read(1024)
-                if self.chatbox.mute:
+                if mute:
                     continue
-                if self.chatbox.girl_open:
+                if boy:
                     pitch_shifted = librosa.effects.pitch_shift(data, self.rate, n_steps= -5)
-                    data_shifted = pitch_shifted.astype(np.int16).tobytes()
-                    self.s.send(data_shifted)
-                    continue
-                if self.chatbox.boy_open:
+                    data = pitch_shifted.astype(np.int16).tobytes()
+                if girl:
                     pitch_shifted = librosa.effects.pitch_shift(data, self.rate, n_steps= 5)
-                    data_shifted = pitch_shifted.astype(np.int16).tobytes()
-                    self.s.send(data_shifted)
-                    continue
+                    data = pitch_shifted.astype(np.int16).tobytes()
                 self.s.sendall(data)
             except:
                 pass
