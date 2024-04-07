@@ -1,13 +1,17 @@
 import socket
 import threading
 import pyaudio
-
+import numpy as np
+import librosa
+from ChatBox import *
+import sounddevice as sd
 
 class Client:
     def __init__(self, ip, port,username):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.running=True
         self.username=username
+        self.chatbox = ChatBox(None, None)
 
         while 1:
             try:
@@ -54,7 +58,10 @@ class Client:
         while self.running:
             try:
                 data = self.s.recv(1024)
-                self.playing_stream.write(data)
+                if self.chatbox.close_audio:
+                    continue
+                else:
+                    self.playing_stream.write(data)
             except:
                 pass
 
@@ -62,6 +69,18 @@ class Client:
         while self.running:
             try:
                 data = self.recording_stream.read(1024)
+                if self.chatbox.mute:
+                    continue
+                if self.chatbox.girl_open:
+                    pitch_shifted = librosa.effects.pitch_shift(data, self.rate, n_steps= -5)
+                    data_shifted = pitch_shifted.astype(np.int16).tobytes()
+                    self.s.send(data_shifted)
+                    continue
+                if self.chatbox.boy_open:
+                    pitch_shifted = librosa.effects.pitch_shift(data, self.rate, n_steps= 5)
+                    data_shifted = pitch_shifted.astype(np.int16).tobytes()
+                    self.s.send(data_shifted)
+                    continue
                 self.s.sendall(data)
             except:
                 pass
