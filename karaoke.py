@@ -1,6 +1,7 @@
 from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.Qt import *
 from PyQt5.QtMultimedia import QSound
 from PyQt5.QtCore import QTimer, QUrl, Qt
@@ -28,8 +29,7 @@ class Karaoke(QMainWindow):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        # initialize the variables
-        self.speed = 1
+        # initialize the variablesspeed
         self.sound_selected_filepath = None
         self.sound_selected_filename = None
         self.sound_selected = QMediaPlayer()
@@ -83,46 +83,6 @@ class Karaoke(QMainWindow):
         if self.playing:
             self.sound_player.play()
 
-
-    # function for recording button
-    def record_change(self):
-        self.recording = not self.recording
-        if self.recording:
-            icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("./designer/circle-stop-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            self.ui.pushButton_9.setIcon(icon)
-            self.stream = self.open_stream()
-            self.frames = []
-            self.stream.start_stream()
-        else:
-            icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            self.ui.pushButton_9.setIcon(icon)
-            self.stop_recording()
-    def stop_recording(self):
-        self.stream.stop_stream()
-        self.stream.close()
-        self.save_recording()
-
-    def open_stream(self):
-        audio = pyaudio.PyAudio()
-        stream = audio.open(format=pyaudio.paInt16,
-                            channels=1,
-                            rate=44100,
-                            input=True,
-                            frames_per_buffer=4 * 1024,
-                            stream_callback=self.callback)
-        return stream
-    def callback(self, in_data, frame_count, time_info, status):
-        self.frames.append(in_data)
-        return in_data, pyaudio.paContinue
-    def save_recording(self):
-        save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
-        if save_path:
-            audio = pyaudio.PyAudio()
-            write_wav_file(save_path, b''.join(self.frames))
-
-
     # Function for input file and music list
     def show_menu(self, pos):
         item = self.ui.listWidget.itemAt(pos)
@@ -161,8 +121,11 @@ class Karaoke(QMainWindow):
         if file_dialog.exec_():
             filenames = file_dialog.selectedFiles()
             for filename in filenames:
-                item = QListWidgetItem(filename)
-                item.setData(Qt.UserRole, os.path.abspath(filename))
+                accompaniment_name = os.path.splitext(os.path.basename(filename))[0]
+                proceeded_filename = k.karaoke_bgm(os.path.abspath(filename))
+                print(proceeded_filename)
+                item = QListWidgetItem(accompaniment_name)
+                item.setData(Qt.UserRole, proceeded_filename)
                 self.ui.listWidget.addItem(item)
 
     def switch_to_previous_audio(self):
@@ -209,8 +172,46 @@ class Karaoke(QMainWindow):
         icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_5.setIcon(icon)
 
+    # function for recording button
+    def record_change(self):
+        self.recording = not self.recording
+        if self.recording:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/circle-stop-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_9.setIcon(icon)
+            self.stream = self.open_stream()
+            self.frames = []
+            self.stream.start_stream()
+        else:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/record-vinyl-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_9.setIcon(icon)
+            self.stop_recording()
 
+    def stop_recording(self):
+        self.stream.stop_stream()
+        self.stream.close()
+        self.save_recording()
 
+    def open_stream(self):
+        audio = pyaudio.PyAudio()
+        stream = audio.open(format=pyaudio.paInt16,
+                            channels=1,
+                            rate=44100,
+                            input=True,
+                            frames_per_buffer=4 * 1024,
+                            stream_callback=self.callback)
+        return stream
+
+    def callback(self, in_data, frame_count, time_info, status):
+        self.frames.append(in_data)
+        return in_data, pyaudio.paContinue
+
+    def save_recording(self):
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
+        if save_path:
+            audio = pyaudio.PyAudio()
+            write_wav_file(save_path, b''.join(self.frames))
 
     def final(self, status):
         if status == QMediaPlayer.EndOfMedia:

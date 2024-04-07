@@ -20,7 +20,8 @@ def karaoke_bgm(input_file):
     #
     cmd = 'python -m spleeter separate -p spleeter:2stems -o karaoke_bgm ' + input_file
     os.system(cmd)
-    bgm_file = 'karaoke_bgm/' + input_file + '/accompaniment.wav'
+    file_name = os.path.splitext(os.path.basename(input_file))[0]
+    bgm_file = os.path.abspath('karaoke_bgm') + '\\'+file_name + '\\accompaniment.wav'
     return bgm_file
 
 
