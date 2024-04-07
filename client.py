@@ -26,12 +26,12 @@ class Client:
         chunk_size = 1024  # 512
         audio_format = pyaudio.paInt16
         channels = 1
-        rate = 20000
+        self.rate = 20000
 
         self.p = pyaudio.PyAudio()
-        self.playing_stream = self.p.open(format=audio_format, channels=channels, rate=rate, output=True,
+        self.playing_stream = self.p.open(format=audio_format, channels=channels, rate=self.rate, output=True,
                                           frames_per_buffer=chunk_size)
-        self.recording_stream = self.p.open(format=audio_format, channels=channels, rate=rate, input=True,
+        self.recording_stream = self.p.open(format=audio_format, channels=channels, rate=self.rate, input=True,
                                             frames_per_buffer=chunk_size)
 
         print("Connected to Server")
@@ -71,10 +71,12 @@ class Client:
                 if mute:
                     continue
                 if boy:
-                    pitch_shifted = librosa.effects.pitch_shift(data, self.rate, n_steps= -5)
+                    nparray=np.frombuffer(data,dtype=np.int16)
+                    pitch_shifted = librosa.effects.pitch_shift(nparray, sr=self.rate, n_steps=-5)
                     data = pitch_shifted.astype(np.int16).tobytes()
                 if girl:
-                    pitch_shifted = librosa.effects.pitch_shift(data, self.rate, n_steps= 5)
+                    nparray = np.frombuffer(data, dtype=np.int16)
+                    pitch_shifted = librosa.effects.pitch_shift(nparray, sr=self.rate, n_steps= 5)
                     data = pitch_shifted.astype(np.int16).tobytes()
                 self.s.sendall(data)
             except:
