@@ -11,8 +11,7 @@ from PyQt5.QtMultimedia import QSound
 from PyQt5.QtCore import QTimer, QUrl, Qt,QObject, pyqtSignal, pyqtSlot
 from chatboxUI import *
 from server_discovery import ServerDiscovery
-from server import Server
-from client import Client
+
 
 
 
@@ -58,25 +57,38 @@ class ChatBox(QMainWindow):
         self.close_audio = False
 
     def close_voice(self):
+        if self.close_audio:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/volume-high-solid-white.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_3.setIcon(icon)
+        else:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/volume-xmark-solid-white.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_3.setIcon(icon)
         self.close_audio = not self.close_audio
-        # self.close_audio = True
+        self.client.receive_server_data(self.close_audio)
 
     def muting(self):
+        if self.mute:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/microphone-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_3.setIcon(icon)
+        else:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/microphone-slash-solid.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_3.setIcon(icon)
         self.mute = not self.mute
-        # self.mute = True
+        self.client.send_data_to_server(False,False,self.mute)
 
     def boy(self):
-        self.girl_open = False
-        self.boy_open = True
+        self.client.send_data_to_server(True,False,False)
 
     def girl(self):
-        self.boy_open = False
-        self.girl_open = True
+        self.client.send_data_to_server(False,True,False)
+
 
     def none(self):
-        self.boy_open = False
-        self.girl_open = False
-
+        self.client.send_data_to_server(False,False,False)
     def horror(self):
         pass
 
