@@ -3,16 +3,14 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.Qt import *
 from PyQt5.QtMultimedia import QSound
-from PyQt5.QtCore import QTimer, QUrl, Qt,QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QTimer, QUrl, Qt
+import qtawesome as qta
 from karaokeUI import *
 import pyaudio
 from write_wav_file import write_wav_file
 import sys
 import os
-import socket
-import threading
-import time
-
+import karaoke_function
 class Karaoke(QMainWindow):
 
     def __init__(self):
@@ -44,6 +42,13 @@ class Karaoke(QMainWindow):
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
         self.ui.horizontalSlider.sliderReleased.connect(self.playing_adjusted)
+
+        # audio playing button
+        self.ui.pushButton_6.clicked.connect(self.switch_to_previous_audio)
+        self.ui.pushButton_4.clicked.connect(self.switch_to_next_audio)
+        self.ui.pushButton_6.setDisabled(True)
+        self.ui.pushButton_4.setDisabled(True)
+        self.flag_any_audio_file_selected = False
 
         # Recording button
         self.recording = False

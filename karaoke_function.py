@@ -6,7 +6,7 @@ import sounddevice as sd
 import threading
 import time
 
-def karaoke_bgm(input_num,input_file=None, bgm_dic = 'karaoke_bgm'):
+def karaoke_bgm(input_file, bgm_dic = 'karaoke_bgm'):
     """
     :param input_num: if -1, users want to input their own bgm. Else, it means the num of bgm the users chose
     :param input_file: if users want input their own bgm, the input_file is the position the input file. Else it will be None
@@ -14,19 +14,14 @@ def karaoke_bgm(input_num,input_file=None, bgm_dic = 'karaoke_bgm'):
     :return: the position of the karaoke bgm
     """
     # Install configuration file
-    warning = "If you want to use karaoke function, please ensure that you have anaconda or miniconda on you PC"
-    print(warning)
-    os.system('conda install -c conda-forge ffmpeg libsndfile')
-    if(input_num >= 0):
-        for i in range(10):
-            if(i == input_num):
-                bgm_file = 'karaoke_bgm/' + str(i) + '.wav'
-                return bgm_file
-    else:
-        cmd = 'python -m spleeter separate -p spleeter:2stems -o karaoke_bgm ' + input_file
-        os.system(cmd)
-        bgm_file = 'karaoke_bgm/' + input_file + '/accompaniment.wav'
-        return bgm_file
+    # warning = "If you want to use karaoke function, please ensure that you have anaconda or miniconda on you PC"
+    # print(warning)
+    # os.system('conda install -c conda-forge ffmpeg libsndfile')
+    #
+    cmd = 'python -m spleeter separate -p spleeter:2stems -o karaoke_bgm ' + input_file
+    os.system(cmd)
+    bgm_file = 'karaoke_bgm/' + input_file + '/accompaniment.wav'
+    return bgm_file
 
 def play_audio(input_bgm):
     chunk = 1024
@@ -58,8 +53,8 @@ def record_microphone_and_system_audio(output_file, duration):
 
 
 
-def karaoke(input_num,input_file=None, bgm_dic = 'karaoke_bgm'):
-    accompaniment = karaoke_bgm(input_num,input_file, bgm_dic)
+def karaoke(input_file, bgm_dic = 'karaoke_bgm'):
+    accompaniment = karaoke_bgm(input_file, bgm_dic)
     output_file = "output.wav"
     recording_duration = 10  # in seconds
 
