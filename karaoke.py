@@ -7,11 +7,13 @@ from PyQt5.QtMultimedia import QSound
 from PyQt5.QtCore import QTimer, QUrl, Qt
 import qtawesome as qta
 from karaokeUI import *
-import pyaudio
 from write_wav_file import write_wav_file
 import sys
 import os
 import karaoke_function as k
+import pyaudio
+import sounddevice as sd
+import numpy as np
 class Karaoke(QMainWindow):
 
     def __init__(self):
@@ -45,7 +47,6 @@ class Karaoke(QMainWindow):
         # player slider
         self.sound_player.setVolume(66)
         self.ui.horizontalSlider.setDisabled(True)
-        self.ui.pushButton_5.setEnabled(False)
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
@@ -57,6 +58,11 @@ class Karaoke(QMainWindow):
         self.ui.pushButton_6.setDisabled(True)
         self.ui.pushButton_4.setDisabled(True)
         self.flag_any_audio_file_selected = False
+        self.ui.pushButton_5.setEnabled(False)
+        self.change_label = False
+        self.playing = False
+        self.pre_music_index = 0
+        self.ui.pushButton_5.clicked.connect(self.play_change)
 
         # Recording button
         self.recording = False
@@ -68,6 +74,21 @@ class Karaoke(QMainWindow):
         self.ui.listWidget.itemDoubleClicked.connect(self.audio_play)
         self.ui.listWidget.setContextMenuPolicy(3)
         self.ui.listWidget.customContextMenuRequested.connect(self.show_menu)
+
+
+    # function for moving the window
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton and self.isMaximized() == False:
+            if -200 <= event.y() <= 200:
+                self.m_flag = True
+                self.m_Position = event.globalPos() - self.pos()
+                event.accept()
+
+    def mouseMoveEvent(self, mouse_event):
+        if Qt.LeftButton and self.m_flag:
+            if -200 <= mouse_event.y() <= 200:
+                self.move(mouse_event.globalPos() - self.m_Position)
+                mouse_event.accept()
 
 
     # function for sound player slider
@@ -171,6 +192,19 @@ class Karaoke(QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_5.setIcon(icon)
+
+    def play_change(self):
+        if self.playing:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/circle-play-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_5.setIcon(icon)
+            self.sound_player.pause()
+        else:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.ui.pushButton_5.setIcon(icon)
+            self.sound_player.play()
+        self.playing = not self.playing
 
     # function for recording button
     def record_change(self):
