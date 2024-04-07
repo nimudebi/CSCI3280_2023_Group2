@@ -10,7 +10,7 @@ import pyaudio
 from write_wav_file import write_wav_file
 import sys
 import os
-import karaoke_function
+import karaoke_function as k
 class Karaoke(QMainWindow):
 
     def __init__(self):
@@ -20,6 +20,13 @@ class Karaoke(QMainWindow):
         self.filepath = None
         self.filename = None
         self.sound_player = QMediaPlayer()
+
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.ui.pushButton_3.clicked.connect(self.showMinimized)
+        self.ui.pushButton.clicked.connect(self.close)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
 
         # initialize the variables
         self.speed = 1
@@ -38,6 +45,7 @@ class Karaoke(QMainWindow):
         # player slider
         self.sound_player.setVolume(66)
         self.ui.horizontalSlider.setDisabled(True)
+        self.ui.pushButton_5.setEnabled(False)
         self.sound_player.positionChanged.connect(self.update_play_slider)
         self.sound_player.mediaStatusChanged.connect(self.final)
         self.ui.horizontalSlider.sliderMoved.connect(self.playing_adjusting)
@@ -153,8 +161,8 @@ class Karaoke(QMainWindow):
         if file_dialog.exec_():
             filenames = file_dialog.selectedFiles()
             for filename in filenames:
-                item = QListWidgetItem(os.path.abspath(filename))
-                item.setData(Qt.UserRole, filename)
+                item = QListWidgetItem(filename)
+                item.setData(Qt.UserRole, os.path.abspath(filename))
                 self.ui.listWidget.addItem(item)
 
     def switch_to_previous_audio(self):
@@ -194,14 +202,12 @@ class Karaoke(QMainWindow):
         self.filepath = item.data(Qt.UserRole)
         media_content = QMediaContent(QUrl.fromLocalFile(self.filepath))
         self.sound_player.setMedia(media_content)
-        self.ui.pushButton_2.setEnabled(True)
         self.ui.pushButton_5.setEnabled(True)
         self.playing = True
         self.sound_player.play()
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("./designer/circle-pause-regular.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_5.setIcon(icon)
-        self.visualization()
 
 
 

@@ -6,7 +6,7 @@ import sounddevice as sd
 import threading
 import time
 
-def karaoke_bgm(input_file, bgm_dic = 'karaoke_bgm'):
+def karaoke_bgm(input_file):
     """
     :param input_num: if -1, users want to input their own bgm. Else, it means the num of bgm the users chose
     :param input_file: if users want input their own bgm, the input_file is the position the input file. Else it will be None
@@ -23,21 +23,6 @@ def karaoke_bgm(input_file, bgm_dic = 'karaoke_bgm'):
     bgm_file = 'karaoke_bgm/' + input_file + '/accompaniment.wav'
     return bgm_file
 
-def play_audio(input_bgm):
-    chunk = 1024
-    wf = wave.open(input_bgm, 'rb')
-    p = pyaudio.PyAudio()
-    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                    channels=wf.getnchannels(),
-                    rate=wf.getframerate(),
-                    output=True)
-    data = wf.readframes(chunk)
-    while data:
-        stream.write(data)
-        data = wf.readframes(chunk)
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
 
 def record_microphone_and_system_audio(output_file, duration):
     def callback(indata, outdata, frames, time, status):
