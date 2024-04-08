@@ -3,15 +3,15 @@ import threading
 import pyaudio
 import numpy as np
 import librosa
-from ChatBox import *
-
+import chatbox
 
 class Client:
     def __init__(self, ip, port,username):
+        self.username = username
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.running=True
         self.username=username
-        self.chatbox = ChatBox(None, None)
+        # self.chatbox = ChatBox(None, None)
 
         while 1:
             try:
@@ -54,30 +54,57 @@ class Client:
         self.s.send(data)
         self.s.close()
 
-    def receive_server_data(self,close_voice):
+    def receive_server_data(self):
         while self.running:
             try:
-                if close_voice:
-                    continue
-                data = self.s.recv(1024)
-                self.playing_stream.write(data)
+                if chatbox.close_voice_status:
+                    print("close_voice_status:", chatbox.close_voice_status)
+                else:
+                    data = self.s.recv(1024)
+                    self.playing_stream.write(data)
+                    print(data)
             except:
                 pass
 
-    def send_data_to_server(self,boy=False, girl=False,mute=False):
+    def send_data_to_server(self):
         while self.running:
             try:
                 data = self.recording_stream.read(1024)
-                if mute:
-                    continue
-                if boy:
-                    nparray=np.frombuffer(data,dtype=np.int16)
-                    pitch_shifted = librosa.effects.pitch_shift(nparray, sr=self.rate, n_steps=-5)
-                    data = pitch_shifted.astype(np.int16).tobytes()
-                if girl:
+                #print(girl_status)
+                #print(boy_status)
+                if chatbox.boy_status:
                     nparray = np.frombuffer(data, dtype=np.int16)
-                    pitch_shifted = librosa.effects.pitch_shift(nparray, sr=self.rate, n_steps= 5)
-                    data = pitch_shifted.astype(np.int16).tobytes()
+                    float_array = nparray.astype(np.float32) / np.iinfo(np.int16).max  # 将音频数据转换为浮点格式
+                    print("boy_status:", chatbox.boy_status)
+                    print("successfully change to boy")
+                    #pitch_shifted = librosa.effects.pitch_shift(nparray, sr=self.rate, n_steps= -5)
+                    pitch_shifted = librosa.effects.pitch_shift(float_array, sr=self.rate, n_steps=-5)
+                    normalized_shifted = np.int16(pitch_shifted * np.iinfo(np.int16).max)  # 将音频数据转换回整数格式
+                    data = normalized_shifted.tobytes()
+                    #data = pitch_shifted.astype(np.int16).tobytes()
+                    print("Finally successfully changed to boy")
+
+                if chatbox.girl_status:
+                    nparray = np.frombuffer(data, dtype=np.int16)
+                    float_array = nparray.astype(np.float32) / np.iinfo(np.int16).max  # 将音频数据转换为浮点格式
+                    print("girl_status:", chatbox.girl_status)
+                    print("successfully change to girl")
+                    pitch_shifted = librosa.effects.pitch_shift(float_array, sr=self.rate, n_steps=5)
+                    #pitch_shifted = librosa.effects.pitch_shift(nparray, sr=self.rate, n_steps= 5)
+                    print("successfully shifted pitch")
+                    normalized_shifted = np.int16(pitch_shifted * np.iinfo(np.int16).max)  # 将音频数据转换回整数格式
+                    data = normalized_shifted.tobytes()
+                    #data = pitch_shifted.astype(np.int16).tobytes()
+                    print("Finally successfully changed to girl")
+
+                if chatbox.mute_status:
+                    print("mute_status:", chatbox.mute_status)
+                    print("Successfully mute.")
+                    continue
+                else:
+                    print("mute_status", chatbox.mute_status)
+                    print("You unmuted.")
+
                 self.s.sendall(data)
             except:
                 pass
