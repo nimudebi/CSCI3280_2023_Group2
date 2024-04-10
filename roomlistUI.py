@@ -48,7 +48,7 @@ class Ui_MainWindow(object):
         self.label_2.setGeometry(QtCore.QRect(100, 90, 211, 31))
         font = QtGui.QFont()
         font.setFamily("Algerian")
-        font.setPointSize(16)
+        font.setPointSize(14)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("#label_2{\n"
 "    color: white;\n"
