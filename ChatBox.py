@@ -23,7 +23,7 @@ boy_status = False
 girl_status = False
 mute_status = False
 close_voice_status = False
-
+funny_status = False
 
 class ChatBox(QMainWindow):
     remove_chatbox = pyqtSignal(str)
@@ -63,9 +63,12 @@ class ChatBox(QMainWindow):
         self.option2 = QAction("boy")
         self.option2.triggered.connect(self.boy)
         self.menu.addAction(self.option2)
-        self.option3 = QAction("none")
-        self.option3.triggered.connect(self.none)
+        self.option3 = QAction("funny")
+        self.option3.triggered.connect(self.funny)
         self.menu.addAction(self.option3)
+        self.option4 = QAction("none")
+        self.option4.triggered.connect(self.none)
+        self.menu.addAction(self.option4)
         self.ui.toolButton.setMenu(self.menu)
         self.ui.toolButton.setPopupMode(QToolButton.InstantPopup)
 
@@ -154,6 +157,10 @@ class ChatBox(QMainWindow):
         boy_status = False
         girl_status = True
         # print("Successfully changed to girl")
+
+    def funny(self):
+        global funny_status
+        funny_status = True
 
     '''
     def boy(self):
