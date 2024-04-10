@@ -15,6 +15,7 @@ from server_discovery import ServerDiscovery
 from server import Server
 from client import Client
 from ChatBox import ChatBox
+from SoundRecorder import SoundRecorder
 
 class ChatRoom(QMainWindow):
     def __init__(self,username):
@@ -30,47 +31,47 @@ class ChatRoom(QMainWindow):
         self.servers = []
         self.discovery = ServerDiscovery()
         self.discovery.server_found.connect(self.handle_server_found)
+        #x = threading.Thread(target=self.handle_server_removed).start()
 
     def server_found_start(self):
-        threading.Thread(target=self.discovery.discover_servers).start()
+        x=threading.Thread(target=self.discovery.discover_servers)
+        x.start()
+        x.join()
 
-    def handle_server_found(self, name, ip, port):
-        existing_items = self.ui.listWidget.findItems(name, QtCore.Qt.MatchExactly)
-        if existing_items:
-            return
-
-        '''server = Server(name)
-        self.servers.append(server)
-        server.start()'''
-        item = QListWidgetItem(name)
-        item.setData(QtCore.Qt.UserRole, (name, ip, port))
-        item.setTextAlignment(QtCore.Qt.AlignCenter)
-        self.ui.listWidget.addItem(item)
+    def handle_server_found(self, servers):
+        #existing_items = self.ui.listWidget.findItems(name, QtCore.Qt.MatchExactly)
+        #if existing_items:
+        #    return
+        self.ui.listWidget.clear()
+        for server in servers:
+            name=server[0]
+            ip=server[1]
+            port=int(server[2])
+            portt=int(server[3])
+            item = QListWidgetItem(name)
+            item.setData(QtCore.Qt.UserRole, (name, ip, port, portt))
+            item.setTextAlignment(QtCore.Qt.AlignCenter)
+            self.ui.listWidget.addItem(item)
 
     def handle_server_removed(self, name):
         item_to_remove = self.ui.listWidget.findItems(name, QtCore.Qt.MatchExactly)[0]
         self.ui.listWidget.takeItem(self.ui.listWidget.row(item_to_remove))
 
     def enter_chat_room(self, item):
-        server = item.data(QtCore.Qt.UserRole)
-        name=server[0]
-        ip = server[1]
-        port = server[2]
-        client = Client(ip, port,self.username)
-        client.start()
-        self.chatbox = ChatBox(client,None)
-        self.chatbox.show()
-
-        user = QListWidgetItem(self.username)
-        user.setData(QtCore.Qt.UserRole, self.username)
-        user.setTextAlignment(QtCore.Qt.AlignCenter)
-        self.chatbox.ui.listWidget.addItem(user)
-        self.chatbox = ChatBox(client, None)
-        self.chatbox.show()
-        user = QListWidgetItem(self.username)
-        user.setData(QtCore.Qt.UserRole, self.username)
-        user.setTextAlignment(QtCore.Qt.AlignCenter)
-        self.chatbox.ui.listWidget.addItem(user)
+        try:
+            server = item.data(QtCore.Qt.UserRole)
+            name=server[0]
+            ip = server[1]
+            port = int(server[2])
+            portt=int(server[3])
+            client = Client(ip, port,portt,self.username)
+            client.start()
+            chatbox = ChatBox(client,None,self.username)
+            chatbox.remove_chatbox.connect(self.handle_server_removed)
+            chatbox.show()
+            #user.setTextAlignment(QtCore.Qt.AlignCenter)
+        except:
+            print("Server is not exist!")
 
 
     def add_chat_room(self):
@@ -110,17 +111,20 @@ class ChatRoom(QMainWindow):
                     item.setData(QtCore.Qt.UserRole, server.getinfo())
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                     self.ui.listWidget.addItem(item)
-
-                    client = Client(server.getinfo()[1], server.getinfo()[2], self.username)
+                    info=server.getinfo()
+                    name = info[0]
+                    ip = info[1]
+                    port = int(info[2])
+                    portt = int(info[3])
+                    client = Client(ip, port, portt, self.username)
                     client.start()
 
-                    self.chatbox = ChatBox(None, server)
-                    self.chatbox.remove_chatbox.connect(self.handle_server_removed)
-                    self.chatbox.show()
-                    user = QListWidgetItem(self.username)
-                    user.setData(QtCore.Qt.UserRole, self.username)
-                    user.setTextAlignment(QtCore.Qt.AlignCenter)
-                    self.chatbox.ui.listWidget.addItem(user)
+                    chatbox = ChatBox(client, server,self.username)
+                    chatbox.remove_chatbox.connect(self.handle_server_removed)
+                    chatbox.show()
+
+                    #user.setTextAlignment(QtCore.Qt.AlignCenter)
+
 
 
     # 似乎有个bug，关闭的时候会提示OSError: [WinError 10038] 在一个非套接字上尝试了一个操作。不过目前还没啥影响

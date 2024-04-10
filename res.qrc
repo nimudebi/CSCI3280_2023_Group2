@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="designer">
+    <file>designer/1.png</file>
+    <file>designer/2.png</file>
+  </qresource>
+</RCC>

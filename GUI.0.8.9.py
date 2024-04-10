@@ -1,5 +1,7 @@
 import sys
 import os
+import threading
+import time
 from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
@@ -17,6 +19,65 @@ from write_wav_file import write_wav_file
 from playback_and_speed_control import speed_control
 from audio_visualization_fixed import audio_visualization_fixed
 from tone_editing import tone_editing
+
+
+def center_display(w):
+    cptr = QDesktopWidget().availableGeometry().center()
+    x = cptr.x() - w.width() // 2
+    y = cptr.y() - w.height() // 2
+    w.move(x, y)
+
+
+class LoginWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Login")
+        self.setWindowIcon(QIcon("./designer/login_icon.png"))
+        self.setGeometry(200, 200, 600, 300)
+
+        # username
+        self.name_label = QLabel("Username:", self)
+        self.name_label.setGeometry(150, 40, 80, 25)  # (x,y,w,h)
+        self.name_input = QLineEdit(self)
+        self.name_input.setPlaceholderText("Please enter your username")
+        self.name_input.setGeometry(150, 70, 300, 25)
+
+        # password
+        self.pwd_label = QLabel("Password:", self)
+        self.pwd_label.setGeometry(150, 120, 80, 25)
+        self.pwd_input = QLineEdit(self)
+        self.pwd_input.setPlaceholderText("Please enter your password")
+        self.pwd_input.setGeometry(150, 150, 300, 25)
+        self.pwd_input.setEchoMode(QLineEdit.Password)
+
+        self.exit_btn = QPushButton("exit", self)
+        self.exit_btn.setGeometry(350, 210, 50, 25)
+        self.exit_btn.clicked.connect(QApplication.instance().quit)
+
+        self.login_btn = QPushButton("Login", self)
+        self.login_btn.setGeometry(180, 210, 50, 25)
+        self.login_btn.clicked.connect(self.login)
+
+        center_display(self)
+
+    def login(self):
+        username = self.name_input.text()
+        password = self.pwd_input.text()
+        self.accept()
+        '''
+        if username and password:
+            self.accept()
+        else:
+            QMessageBox.information(self, "Error!", f"Login Failed! Invalid username or password!")
+
+        '''
+
+    @staticmethod
+    def open_next_window():
+        w = SoundRecorder()
+        w.show()
+
 
 def count_files(path):
     file_list = os.listdir(path)  # 获取文件夹中所有文件的列表
@@ -41,7 +102,7 @@ class SoundRecorder(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton_3.clicked.connect(self.showMinimized)
-        self.ui.pushButton.clicked.connect(self.close_widget)
+        self.ui.pushButton.clicked.connect(self.close)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
@@ -129,10 +190,12 @@ class SoundRecorder(QMainWindow):
         # self.volume_line.valueChanged.connect(self.volume_adjust)
 
     def overwrite(self):
-        start_time = self.ui.horizontalSlider_2.value() // 1000
+        start_time = self.ui.horizontalSlider_3.value() // 1000
         fresh_recording = self.sound_selected_filepath
         input_path = self.filepath
-
+        if start_time < 0 or start_time > self.sound_player.duration()//1000:
+            QMessageBox.critical(self, "Error", f"Warning: Time region out of limit!")
+            return
         save_path, _ = QFileDialog.getSaveFileName(self, "Save as..?", "", "WAV FILE (*.wav)")
         if save_path:
             trim(input_path, save_path, start_time, fresh_recording)
@@ -183,14 +246,13 @@ class SoundRecorder(QMainWindow):
         self.ui.horizontalSlider.setRange(0, duration)
         self.ui.horizontalSlider.setValue(position)
         self.ui.horizontalSlider.setDisabled(False)
-
+        self.ui.horizontalSlider_2.setDisabled(False)
+        self.ui.horizontalSlider_3.setDisabled(False)
         if self.change_label is not True:
             self.change_label = True
-            self.ui.horizontalSlider_2.setDisabled(False)
-            self.ui.horizontalSlider_3.setDisabled(False)
-            self.ui.horizontalSlider_2.setRange(0, self.sound_player.duration())
-            self.ui.horizontalSlider_3.setRange(0, self.sound_player.duration())
-            self.ui.horizontalSlider_2.setValue(self.sound_player.duration())
+            self.ui.horizontalSlider_2.setRange(0, self.sound_selected.duration())
+            self.ui.horizontalSlider_3.setRange(0, self.sound_selected.duration())
+            self.ui.horizontalSlider_2.setValue(self.sound_selected.duration())
             self.ui.horizontalSlider_3.setValue(0)
 
     def playing_adjusting(self, position):
@@ -361,10 +423,6 @@ class SoundRecorder(QMainWindow):
             if -200 <= mouse_event.y() <= 200:
                 self.move(mouse_event.globalPos() - self.m_Position)
                 mouse_event.accept()
-
-
-    def close_widget(self ):
-        self.close()
 
     def open_editing_window(self):
         if self.editing_window is None:
@@ -575,9 +633,13 @@ class SoundRecorder(QMainWindow):
             transcript_area.setText("")
             self.speech_to_text_window.show()
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
-    chat_app = SoundRecorder()
-    chat_app.show()
+    app.setStyle(QStyleFactory.create("Windows"))
+    # login_window = LoginWindow()
+    # login_window.show()
+    # if login_window.exec_() == LoginWindow.Accepted:
+    w = SoundRecorder()
+    w.show()
     sys.exit(app.exec_())

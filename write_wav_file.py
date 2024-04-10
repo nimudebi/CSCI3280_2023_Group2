@@ -1,4 +1,4 @@
-def write_wav_file(filename, audio_data, sample_rate=44100):
+def write_wav_file(filename,audio_data,sample_rate=44100):
     # WAV file header constants
     chunk_id = b"RIFF"
     format_type = b"WAVE"
@@ -17,20 +17,20 @@ def write_wav_file(filename, audio_data, sample_rate=44100):
     chunk_size = 36 + data_size
 
     with open(filename, "wb") as wav_file:
-        # Write the WAV file header
-        wav_file.write(chunk_id)
-        wav_file.write(chunk_size.to_bytes(4, "little"))
-        wav_file.write(format_type)
-        wav_file.write(subchunk1_id)
-        wav_file.write(subchunk1_size.to_bytes(4, "little"))
-        wav_file.write(audio_format.to_bytes(2, "little"))
-        wav_file.write(num_channels.to_bytes(2, "little"))
-        wav_file.write(sample_rate.to_bytes(4, "little"))
-        wav_file.write(byte_rate.to_bytes(4, "little"))
-        wav_file.write(block_align.to_bytes(2, "little"))
-        wav_file.write(bits_per_sample.to_bytes(2, "little"))
-        wav_file.write(subchunk2_id)
-        wav_file.write(data_size.to_bytes(4, "little"))
+        # Write the WAV file header                             # byte_number
+        wav_file.write(chunk_id)                                # 0
+        wav_file.write(chunk_size.to_bytes(4, "little"))        # 4
+        wav_file.write(format_type)                             # 8
+        wav_file.write(subchunk1_id)                            # 12
+        wav_file.write(subchunk1_size.to_bytes(4, "little"))    # 16
+        wav_file.write(audio_format.to_bytes(2, "little"))      # 20
+        wav_file.write(num_channels.to_bytes(2, "little"))      # 22
+        wav_file.write(sample_rate.to_bytes(4, "little"))       # 24
+        wav_file.write(byte_rate.to_bytes(4, "little"))         # 28
+        wav_file.write(block_align.to_bytes(2, "little"))       # 30
+        wav_file.write(bits_per_sample.to_bytes(2, "little"))   # 32
+        wav_file.write(subchunk2_id)                            # 36
+        wav_file.write(data_size.to_bytes(4, "little"))         # 40
 
-        # Write the audio data
-        wav_file.write(audio_data)
+        wav_file.write(audio_data)                              # 44, audio data starts here
+

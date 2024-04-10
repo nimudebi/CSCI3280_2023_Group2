@@ -21,7 +21,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#MainWindow{
-	boarder:none;
+	border:none;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -126,12 +126,15 @@ QFrame{
              <height>28</height>
             </rect>
            </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
            <property name="text">
             <string/>
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>designer/times-solid.svg</normaloff>designer/times-solid.svg</iconset>
+             <normaloff>C:/Users/dianj/.designer/backup/designer/times-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/times-solid.svg</iconset>
            </property>
           </widget>
           <widget class="QPushButton" name="pushButton_3">
@@ -143,12 +146,15 @@ QFrame{
              <height>28</height>
             </rect>
            </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
            <property name="text">
             <string/>
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>designer/compress-alt-solid.svg</normaloff>designer/compress-alt-solid.svg</iconset>
+             <normaloff>C:/Users/dianj/.designer/backup/designer/compress-alt-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/compress-alt-solid.svg</iconset>
            </property>
           </widget>
          </widget>
@@ -250,7 +256,7 @@ QPushButton{
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>designer/upload-solid.svg</normaloff>designer/upload-solid.svg</iconset>
+               <normaloff>C:/Users/dianj/.designer/backup/designer/upload-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/upload-solid.svg</iconset>
              </property>
             </widget>
             <widget class="QListWidget" name="listWidget">
@@ -296,26 +302,130 @@ QStackedWidget{
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QStackedWidget" name="stackedWidget">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>821</width>
-               <height>601</height>
-              </rect>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QStackedWidget{
-	background-color:rgb(253, 255, 248)
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>8</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="frame_11">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>1</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
+	background-color:rgb(255, 246, 224);
+	border:none;
+	border-radius:22px;
 }</string>
-             </property>
-             <property name="currentIndex">
-              <number>1</number>
-             </property>
-             <widget class="QWidget" name="page"/>
-             <widget class="QWidget" name="page_2"/>
-            </widget>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QPushButton" name="pushButton_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>50</width>
+                    <height>45</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>designer/scissors-solid.svg</normaloff>designer/scissors-solid.svg</iconset>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="horizontalSlider_3">
+                  <property name="styleSheet">
+                   <string notr="true">QSlider {
+	background: transparent;
+}
+QSlider::groove:horizontal{
+	height: 16px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20);}
+QSlider::handle:horizontal {
+	background-color: orange;
+	border: 2px solid #fff;
+width: 10px;
+margin-top: -3px;
+margin-bottom: -3px;
+border-radius: 5px;
+}</string>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSlider" name="horizontalSlider_2">
+                  <property name="styleSheet">
+                   <string notr="true">QSlider {
+	background: transparent;
+}
+QSlider::groove:horizontal{
+	height: 16px;left: 0px;right: 0px;border:0px;border-radius:6px;background:rgba(0,0,0,20);}
+QSlider::handle:horizontal {
+	background-color: orange;
+	border: 2px solid #fff;
+width: 10px;
+margin-top: -3px;
+margin-bottom: -3px;
+border-radius: 5px;
+}</string>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="tickPosition">
+                   <enum>QSlider::TicksAbove</enum>
+                  </property>
+                  <property name="tickInterval">
+                   <number>5</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_10">
+                  <property name="minimumSize">
+                   <size>
+                    <width>50</width>
+                    <height>45</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>designer/object-ungroup-solid.svg</normaloff>designer/object-ungroup-solid.svg</iconset>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -396,7 +506,7 @@ QStackedWidget{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>designer/backward-fast-solid.svg</normaloff>designer/backward-fast-solid.svg</iconset>
+                 <normaloff>C:/Users/dianj/.designer/backup/designer/backward-fast-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/backward-fast-solid.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -438,7 +548,7 @@ QStackedWidget{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>designer/circle-play-regular.svg</normaloff>designer/circle-play-regular.svg</iconset>
+                 <normaloff>C:/Users/dianj/.designer/backup/designer/circle-play-regular.svg</normaloff>C:/Users/dianj/.designer/backup/designer/circle-play-regular.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -473,7 +583,7 @@ QStackedWidget{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>designer/forward-fast-solid.svg</normaloff>designer/forward-fast-solid.svg</iconset>
+                 <normaloff>C:/Users/dianj/.designer/backup/designer/forward-fast-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/forward-fast-solid.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -498,6 +608,10 @@ QStackedWidget{
              <string notr="true">QPushButton{
 	border:none;
 	border-radius:22px;
+}
+QToolButton{
+	border:none;
+	border-radius:22px;
 }</string>
             </property>
             <property name="frameShape">
@@ -520,12 +634,8 @@ QStackedWidget{
 	height:40px;
 }
 QSlider::groove:horizontal{
-        height: 13px;
-        left: 0px;
-        right: 0px;
-        border:0px;   
-        border-radius:6px;   
-        background:rgba(0,0,0,20);
+        height: 12px;
+        
 }
 QSlider::handle:horizontal{
         width:  22px;
@@ -578,7 +688,7 @@ QSlider::sub-page:horizontal{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>designer/volume-high-solid.svg</normaloff>designer/volume-high-solid.svg</iconset>
+                 <normaloff>C:/Users/dianj/.designer/backup/designer/volume-high-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/volume-high-solid.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -589,7 +699,7 @@ QSlider::sub-page:horizontal{
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_7">
+              <widget class="QToolButton" name="toolButton">
                <property name="minimumSize">
                 <size>
                  <width>45</width>
@@ -602,14 +712,18 @@ QSlider::sub-page:horizontal{
                  <height>45</height>
                 </size>
                </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="mouseTracking">
-                <bool>true</bool>
-               </property>
                <property name="text">
-                <string>按钮</string>
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>designer/gauge-simple-solid.svg</normaloff>designer/gauge-simple-solid.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
                </property>
               </widget>
              </item>
@@ -679,7 +793,7 @@ QSlider::sub-page:horizontal{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>designer/record-vinyl-solid.svg</normaloff>designer/record-vinyl-solid.svg</iconset>
+                 <normaloff>C:/Users/dianj/.designer/backup/designer/record-vinyl-solid.svg</normaloff>C:/Users/dianj/.designer/backup/designer/record-vinyl-solid.svg</iconset>
                </property>
                <property name="iconSize">
                 <size>

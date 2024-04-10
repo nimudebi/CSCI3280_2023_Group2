@@ -53,35 +53,9 @@ def audio_overwrite(input_file, output_file, start_time, fresh_recording):
         # print("data and data type of data_size_new: ",data_size_new,"  ",type(data_size_new),"\n")
         data_size_new_byte = data_size_new.to_bytes(4, 'little')
         header_in[40:44] = data_size_new_byte
-
-    '''
-    # overwrite the input audio with fresh recording
-    if start_time < 0 or (int(start_time) + audio_len_sec_fresh) > audio_len_sec_in:
-        print("Warning: Time region out of limit!\n")
-        return
-    audio_data_new = bytearray()
-    audio_data_new.extend(audio_data_in[0:int(int(start_time) * byte_rate_in)])
-    audio_data_new.extend(audio_data_fresh[0:int(audio_len_sec_fresh * byte_rate_fresh)])
-    audio_data_new.extend(audio_data_in[
-                          (int(int(start_time) * byte_rate_in) + int(audio_len_sec_fresh * byte_rate_fresh)):(
-                              int(audio_len_sec_in * byte_rate_in))])
-    '''
-
-    '''
-    if(start_time>=end_time or start_time<0 or end_time>audio_len_sec):
-        print("Warning: time selection out of region!\n")
-        return
-    data_size_new=(end_time-start_time)*byte_rate
-    # print("data and data type of data_size_new: ",data_size_new,"  ",type(data_size_new),"\n")
-    data_size_new_byte=data_size_new.to_bytes(4,'little')
-    audio_data_new = audio_data[int(start_time * byte_rate):int(end_time * byte_rate)]
-    header[40:44]=data_size_new_byte
-    # print(header,"\n")
-    '''
     # store new data into new wav file
     with open(output_file, 'wb') as wav_out:
         wav_out.write(header_in)
         wav_out.write(audio_data_new)
     # print("finish saving trimming data\n")
-
 

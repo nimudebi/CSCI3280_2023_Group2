@@ -24,137 +24,109 @@ class Server:
     def __init__(self, room_name):
         self.ip = get_private_ip()
         self.name = room_name
+        self.users=[]
         self.audio_buffer = []
         self.tmp_data=[]
-        self.users = []
         self.complete_data=[]
         self.count=0
         while True:
             try:
-                self.port = random.randint(10000, 10100)
-                self.sv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sv.bind((self.ip, self.port))
+                self.port = random.randint(10000, 11000)
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.s.bind((self.ip, self.port))
                 break
             except:
                 print("Couldn't bind to that port")
-                break
-        while True:
-            try:
-                self.portt = random.randint(10200, 10300)
-                self.st = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.st.bind((self.ip, self.portt))
-                break
-            except:
-                print("Couldn't bind to that port")
-                break
 
         self.connections = []
-        self.txt_connections=[]
         self.running = True
         self.accept_thread = threading.Thread(target=self.accept_connections)
+        self.mix_thread = threading.Thread(target=self.get_data)
 
 
     def start(self):
         self.register_to_central_server("START")
         self.accept_thread.start()
         print("yes")
-
+        self.mix_thread.start()
 
     def stop(self):
         self.register_to_central_server("STOP")
         self.running = False
-        self.sv.close()
-        self.st.close()
+        self.s.close()
         for connection in self.connections:
-            connection.close()
-        for connection in self.txt_connections:
             connection.close()
 
     def accept_connections(self):
-        self.sv.listen(100)
-        self.st.listen(100)
-        print('Running on IP: ' + self.ip)
-        print('Voice Stream Running on port: ' + str(self.port))
-        print('Text Stream Running on port: ' + str(self.portt))
+        self.s.listen(100)
 
-        while self.running:
-            #try:
-            c, addr = self.sv.accept()
-            ct,addr = self.st.accept()
+        print('Running on IP: ' + self.ip)
+        print('Running on port: ' + str(self.port))
+
+        while True:
+            c, addr = self.s.accept()
             bf = queue.Queue()
             self.connections.append(c)
-            self.txt_connections.append(ct)
             self.audio_buffer.append(bf)
             self.tmp_data.append(b'')
             self.complete_data.append(b'')
             threading.Thread(target=self.handle_client, args=(c, addr, self.audio_buffer[self.count])).start()
-            threading.Thread(target=self.text_interact, args=(ct, addr,)).start()
+
             self.count += 1
-            #except:
-            #    print("what happen?")
 
     def broadcast(self, data,c,flag=False):
-        if flag is False:
-            for client in self.connections:
-                if client != self.sv and client != c:
+        for client in self.connections:
+            if flag is False:
+                if client != self.s and client !=c:
                     try:
                         client.send(data)
                     except:
                         pass
-        else:
-            for client in self.txt_connections:
-                if client != self.st:
+            else:
+                if client != self.s:
                     try:
                         client.send(data)
                     except:
                         pass
 
     def getinfo(self):
-        return self.name, self.ip, self.port,self.portt
-
-    def text_interact(self, c, addr):
-        while self.running:
-            try:
-                data = c.recv(1024)
-                flag=True
-                print("yes")
-                if data.decode()[:4] == 'FUCK':
-                    username=data.decode()[4:]
-                    self.users.append(username)
-                    str="CHANGE"+",".join(self.users)
-                    self.broadcast(str.encode(),c,flag)
-
-                elif data.decode()[:4] == 'DAMN':
-                    username = data.decode()[4:]
-                    str = "CHANGE" + ",".join(self.users)
-                    print(self.users)
-                    self.broadcast(str.encode(), c, flag)
-                    self.connections.remove(c)
-                    self.txt_connections.remove(c)
-                    self.users.remove(username)
-                    c.close()
-
-                else:
-                    str = data.decode()
-                    self.broadcast(str.encode(), c, flag)
-
-            except:
-                c.close()
+        return self.name, self.ip, self.port
 
     def handle_client(self, c, addr, q):
         while self.running:
             try:
                 data = c.recv(1024)
-                self.broadcast(data, c)
+                flag=False
+                try:
+                    if data.decode()[:4] == 'FUCK':
+                        username=data.decode()[4:]
+                        print(username)
+                        self.users.append(username)
+                        str="CHANGE"+",".join(self.users)
+                        flag=True
+                        self.broadcast(str.encode(),c,flag)
+                        print(self.connections)
+
+                    if data.decode()[:4] == 'DAMN':
+                        username = data.decode()[4:]
+                        self.connections.remove(c)
+                        self.users.remove(username)
+                        c.close()
+                except:
+
+                    self.broadcast(c, data)
             except:
                 c.close()
+
+
+
 
 
     def register_to_central_server(self, action):
         central_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             central_socket.connect((CENTRAL_SERVER_IP, CENTRAL_SERVER_PORT))
-            message = f"{action}{self.name},{self.ip},{self.port},{self.portt}"
+            message = f"{action}{self.name},{self.ip},{self.port}"
             central_socket.send(message.encode())
             server_list = central_socket.recv(1024).decode()
             # print("Server list received from central server:")
@@ -167,7 +139,13 @@ if __name__ == "__main__":
     server = Server("niubi")
     server.start()
 
+
+
+
+
+
 '''
+
                 x=len(data)
                 y=len(self.tmp_data[i])
                 if x+y<1024:
