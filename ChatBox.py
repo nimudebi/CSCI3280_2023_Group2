@@ -36,8 +36,8 @@ class ChatBox(QMainWindow):
         self.msg=""
         self.my_message = ''
         self.recorder = PhaseIIRecorderUI()
-        global boy_status, girl_status, mute_status, close_voice_status
-        boy_status = girl_status = mute_status = close_voice_status = False
+        global boy_status, girl_status, mute_status, close_voice_status, funny_status
+        boy_status = girl_status = mute_status = close_voice_status = funny_status = False
         self.client=client
         self.server=server
         self.karaoke=None
@@ -150,17 +150,21 @@ class ChatBox(QMainWindow):
         global girl_status
         boy_status = True
         girl_status = False
+        funny_status = False
 
     def girl(self):
         global boy_status
         global girl_status
         boy_status = False
         girl_status = True
+        funny_status = False
         # print("Successfully changed to girl")
 
     def funny(self):
         global funny_status
         funny_status = True
+        boy_status = False
+        girl_status = False
 
     '''
     def boy(self):
@@ -173,8 +177,10 @@ class ChatBox(QMainWindow):
     def none(self):
         global boy_status
         global girl_status
+        global funny_status
         boy_status = False
         girl_status = False
+        funny_status = False
         
     def get_online_users(self):
         while True:
