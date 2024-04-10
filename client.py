@@ -84,7 +84,6 @@ class Client:
                     normalized_shifted = np.int16(pitch_shifted * np.iinfo(np.int16).max)  # 将音频数据转换回整数格式
                     data = normalized_shifted.tobytes()
 
-
                 if ChatBox.girl_status:
                     nparray = np.frombuffer(data, dtype=np.int16)
                     float_array = nparray.astype(np.float32) / np.iinfo(np.int16).max  # 将音频数据转换为浮点格式
@@ -92,6 +91,12 @@ class Client:
                     normalized_shifted = np.int16(pitch_shifted * np.iinfo(np.int16).max)  # 将音频数据转换回整数格式
                     data = normalized_shifted.tobytes()
 
+                if ChatBox.funny_status:
+                    nparray = np.frombuffer(data, dtype=np.int16)
+                    float_array = nparray.astype(np.float32) / np.iinfo(np.int16).max  # 将音频数据转换为浮点格式
+                    pitch_shifted = librosa.effects.pitch_shift(float_array, sr=self.rate, n_steps=20)
+                    normalized_shifted = np.int16(pitch_shifted * np.iinfo(np.int16).max)  # 将音频数据转换回整数格式
+                    data = normalized_shifted.tobytes()
 
                 if ChatBox.mute_status:
                     continue
