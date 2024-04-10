@@ -63,15 +63,9 @@ class ChatBox(QMainWindow):
         self.option2 = QAction("boy")
         self.option2.triggered.connect(self.boy)
         self.menu.addAction(self.option2)
-        self.option3 = QAction("horror")
-        self.option3.triggered.connect(self.horror)
+        self.option3 = QAction("none")
+        self.option3.triggered.connect(self.none)
         self.menu.addAction(self.option3)
-        self.option4 = QAction("echo")
-        self.option4.triggered.connect(self.echo)
-        self.menu.addAction(self.option4)
-        self.option5 = QAction("none")
-        self.option5.triggered.connect(self.none)
-        self.menu.addAction(self.option5)
         self.ui.toolButton.setMenu(self.menu)
         self.ui.toolButton.setPopupMode(QToolButton.InstantPopup)
 
@@ -174,13 +168,7 @@ class ChatBox(QMainWindow):
         global girl_status
         boy_status = False
         girl_status = False
-
-    def horror(self):
-        pass
-
-    def echo(self):
-        pass
-
+        
     def get_online_users(self):
         while True:
             online=self.client.users
