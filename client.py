@@ -69,6 +69,8 @@ class Client:
         while self.running:
             try:
                 data = self.sv.recv(1024)
+                if ChatBox.close_voice_status == True:
+                    continue
                 self.playing_stream.write(data)
             except:
                 pass
