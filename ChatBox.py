@@ -73,8 +73,7 @@ class ChatBox(QMainWindow):
         self.ui.toolButton.setPopupMode(QToolButton.InstantPopup)
 
     def kok(self):
-        self.karaoke = Karaoke()
-        self.karaoke.show()
+        os.system("python karaoke.py")
 
     def send_txt(self):
         self.msg = self.ui.textEdit_2.toPlainText()
@@ -98,7 +97,7 @@ class ChatBox(QMainWindow):
                 self.ui.textEdit.append(self.client.message_received)
 
     def recording(self):
-        self.recorder.show()
+        os.system("python phaseIIRecorder.py")
 
     def close_voice(self):
         global close_voice_status
