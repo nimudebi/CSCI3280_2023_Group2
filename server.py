@@ -126,13 +126,17 @@ class Server:
 
                 elif data.decode()[:4] == 'DAMN':
                     username = data.decode()[4:]
+                    self.users.remove(username)
                     str = "CHANGE" + ",".join(self.users)
                     print(self.users)
                     self.broadcast(str.encode(), c, flag)
                     self.connections.remove(c)
                     self.txt_connections.remove(c)
-                    self.users.remove(username)
+
                     c.close()
+
+                elif data[:7].decode()=="CAONIMA":
+                    self.broadcast(data,c,False)
 
                 else:
                     str = data.decode()
