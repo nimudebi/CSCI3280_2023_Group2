@@ -6,13 +6,15 @@ import librosa
 import time
 import ChatBox
 
+
 class Client:
-    users=[]
-    def __init__(self, ip, portv,portt,username):
+    users = []
+
+    def __init__(self, ip, portv, portt, username):
         self.sv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.st = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.running=True
-        self.username=username
+        self.running = True
+        self.username = username
         self.message_received = ""
 
         while 1:
@@ -30,8 +32,8 @@ class Client:
 
         chunk_size = 1024  # 512
         audio_format = pyaudio.paInt16
-        channels = 1
-        self.rate = 20000
+        channels = 2
+        self.rate = 44100
 
         self.p = pyaudio.PyAudio()
         self.playing_stream = self.p.open(format=audio_format, channels=channels, rate=self.rate, output=True,
@@ -51,14 +53,13 @@ class Client:
         self.voice_receive_thread.start()
 
     def stop(self):
-        data = b'DAMN'+self.username.encode()
+        data = b'DAMN' + self.username.encode()
         self.st.send(data)
         self.running = False
         self.sv.close()
         self.st.close()
 
-
-    def send_text_to_server(self,message):
+    def send_text_to_server(self, message):
         try:
             data = message.encode()
             self.st.send(data)
@@ -82,7 +83,7 @@ class Client:
 
                 if ChatBox.mute_status:
                     continue
-                
+
                 if ChatBox.boy_status:
                     nparray = np.frombuffer(data, dtype=np.int16)
                     float_array = nparray.astype(np.float32) / np.iinfo(np.int16).max  # 将音频数据转换为浮点格式
@@ -112,8 +113,8 @@ class Client:
         while self.running:
             try:
                 data = self.st.recv(1024)
-                if data.decode()[:6]=="CHANGE":
-                    Client.users=data.decode()[6:].split(",")
+                if data.decode()[:6] == "CHANGE":
+                    Client.users = data.decode()[6:].split(",")
                     print(Client.users)
                 else:
                     message = data.decode()
@@ -122,13 +123,10 @@ class Client:
                 pass
 
 
-
-
 if __name__ == "__main__":
     ip = "192.168.99.142"
     port = 10089
-    portt= 10290
+    portt = 10290
 
-    client = Client(ip, port,portt,"yes12")
+    client = Client(ip, port, portt, "yes12")
     client.start()
-    
