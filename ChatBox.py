@@ -10,7 +10,7 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.Qt import *
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, QUrl, Qt,QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QTimer, QUrl, Qt, QObject, pyqtSignal, pyqtSlot
 from chatboxUI import *
 from server_discovery import ServerDiscovery
 import pyaudio
@@ -18,30 +18,30 @@ import pyaudio
 from karaoke import Karaoke
 from phaseIIRecorder import PhaseIIRecorderUI
 
-
 boy_status = False
 girl_status = False
 mute_status = False
 close_voice_status = False
 funny_status = False
 
+
 class ChatBox(QMainWindow):
     remove_chatbox = pyqtSignal(str)
 
-    def __init__(self,client,server,username):
+    def __init__(self, client, server, username):
         super().__init__()
         self.ui = Ui_MainWindow()
-        self.username=username
+        self.username = username
         self.ui.setupUi(self)
-        self.msg=""
+        self.msg = ""
         self.my_message = ''
         self.recorder = PhaseIIRecorderUI()
         global boy_status, girl_status, mute_status, close_voice_status, funny_status
         boy_status = girl_status = mute_status = close_voice_status = funny_status = False
-        self.client=client
-        self.server=server
-        self.karaoke=None
-        self.user=[]
+        self.client = client
+        self.server = server
+        self.karaoke = None
+        self.user = []
         threading.Thread(target=self.get_online_users).start()
         threading.Thread(target=self.update_text_message).start()
         # add close_voice function
@@ -72,9 +72,8 @@ class ChatBox(QMainWindow):
         self.ui.toolButton.setMenu(self.menu)
         self.ui.toolButton.setPopupMode(QToolButton.InstantPopup)
 
-
     def kok(self):
-        self.karaoke=Karaoke()
+        self.karaoke = Karaoke()
         self.karaoke.show()
 
     def send_txt(self):
@@ -86,7 +85,7 @@ class ChatBox(QMainWindow):
             self.msg = self.username + ": " + self.msg
             print(self.msg)
             self.client.send_text_to_server(self.msg)
-            self.msg=''
+            self.msg = ''
         else:
             print("you stupid guy send an empty message.")
 
@@ -181,14 +180,14 @@ class ChatBox(QMainWindow):
         boy_status = False
         girl_status = False
         funny_status = False
-        
+
     def get_online_users(self):
         while True:
-            online=self.client.users
-            if online==self.user:
+            online = self.client.users
+            if online == self.user:
                 continue
             else:
-                self.user=online
+                self.user = online
                 self.ui.listWidget.clear()
                 self.ui.listWidget.addItems(self.user)
 
@@ -203,13 +202,11 @@ class ChatBox(QMainWindow):
             event.accept()
 
 
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ip = "192.168.92.246"
     port = 10286
-    #client = Client(ip, port, "yes")
-    chat_app = ChatBox(None,None,"self.username")
+    # client = Client(ip, port, "yes")
+    chat_app = ChatBox(None, None, "self.username")
     chat_app.show()
     sys.exit(app.exec_())

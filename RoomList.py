@@ -34,24 +34,27 @@ class ChatRoom(QMainWindow):
         #x = threading.Thread(target=self.handle_server_removed).start()
 
     def server_found_start(self):
-        x=threading.Thread(target=self.discovery.discover_servers)
-        x.start()
-        x.join()
+        try:
+            x=threading.Thread(target=self.discovery.discover_servers)
+            x.start()
+            x.join()
+        except:
+            print("what happen")
 
     def handle_server_found(self, servers):
-        #existing_items = self.ui.listWidget.findItems(name, QtCore.Qt.MatchExactly)
-        #if existing_items:
-        #    return
-        self.ui.listWidget.clear()
-        for server in servers:
-            name=server[0]
-            ip=server[1]
-            port=int(server[2])
-            portt=int(server[3])
-            item = QListWidgetItem(name)
-            item.setData(QtCore.Qt.UserRole, (name, ip, port, portt))
-            item.setTextAlignment(QtCore.Qt.AlignCenter)
-            self.ui.listWidget.addItem(item)
+        try:
+            self.ui.listWidget.clear()
+            for server in servers:
+                name=server[0]
+                ip=server[1]
+                port=int(server[2])
+                portt=int(server[3])
+                item = QListWidgetItem(name)
+                item.setData(QtCore.Qt.UserRole, (name, ip, port, portt))
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.ui.listWidget.addItem(item)
+        except:
+            print("what happen?")
 
     def handle_server_removed(self, name):
         item_to_remove = self.ui.listWidget.findItems(name, QtCore.Qt.MatchExactly)[0]

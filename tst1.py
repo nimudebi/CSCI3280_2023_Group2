@@ -1,13 +1,32 @@
-from SoundRecorder import SoundRecorder
-import sys
-from PyQt5.QtGui import *
-from PyQt5 import uic
-from PyQt5.QtWidgets import *
-from PyQt5.Qt import *
-from PyQt5.QtMultimedia import QSound
-from PyQt5.QtCore import QTimer, QUrl, Qt
-app = QApplication(sys.argv)
+import socket
+import tqdm
+import os
 
-chat_app = SoundRecorder()
-chat_app.show()
-sys.exit(app.exec_())
+SEPARATOR=""
+
+host="192.168.99.1"
+port=7777
+
+BUFFER_SIZE = 4096
+
+filename=""
+
+file_size=os.path.getsize(filename)
+
+s=socket.socket()
+s.bind((host,port))
+s.listen(100)
+
+s.send(f"{filename}{SEPARATOR}{file_size}".encode())
+#进度条
+progress = tqdm.tqdm(range(file_size),f"send {filename}",unit="B",unit_divisor=1024)
+with open(filename,"rb") as f:
+    for _ in progress:
+        bytes_read = f.read(BUFFER_SIZE)
+        if not bytes_read:
+            break
+        s.sendall(bytes_read)
+        # 更新进度条
+        progress.update(len(bytes_read))
+
+s.close()
