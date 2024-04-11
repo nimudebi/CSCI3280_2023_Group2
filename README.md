@@ -17,10 +17,17 @@ pip install pyaudio
 pip install librosa
 pip install matplotlib
 pip install sounddevice
+pip install spleeter
 pip install numpy
 pip install soundfile
 pip install pydub
 ```
+
+Also, you need an anaconda or miniconda environment, and run
+```
+conda install -c conda-forge ffmpeg libsndfile
+```
+
 **Notice**: You may meet some issues when using pydub, "FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'". Since we are using Mac, we don't really know how to solve this issue, so please refer to some online resources to solve this problem.  
 
 ## Usage  
