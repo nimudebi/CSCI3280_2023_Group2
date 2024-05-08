@@ -2,9 +2,9 @@
 This is the group project of CSCI3280 group 2, 2023-2024 sem 2, CUHK.  
 
 This projecthas been contributed by the following people:  
-NIU Chenyu
-QIN Jiantong
-WANG Yitian
+NIU Chenyu 
+QIN Jiantong 
+WANG Yitian 
 ZHANG Heqiong	
 
 ## Installation
