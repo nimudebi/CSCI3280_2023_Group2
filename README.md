@@ -31,7 +31,7 @@ conda install -c conda-forge ffmpeg libsndfile
 **Notice**: You may meet some issues when using pydub, "FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'". Since we are using Mac, we don't really know how to solve this issue, so please refer to some online resources to solve this problem.  
 
 ## Usage  
-First, please make sure all users are using the same local area network. The network creater may set CENTRAL_SERVER_IP to the IP address of the creater's in central_server.py. Then, everybody including the creater may set CENTRAL_SERVER_IP to that IP address.  
+First, please make sure all users are using the same local area network (Since we have no money to rent a server 😭). The network creater may set CENTRAL_SERVER_IP in **centeral_server.py, server_discovery.py, server.py** to the IPv4 address of the creater's in central_server.py. Then, everybody including the creater may set CENTRAL_SERVER_IP in those three files to that IP address.  
 
 ```run``` the file GUI.py. Enter a user name you like and you do not need to enter a password. Click on Login button. This step may be failed because of some unknown features of this framework PyQt5. If the program breaks after you do so, please run it again.  
 
