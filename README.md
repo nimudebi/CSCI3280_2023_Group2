@@ -31,7 +31,7 @@ conda install -c conda-forge ffmpeg libsndfile
 **Notice**: You may meet some issues when using pydub, "FileNotFoundError: [Errno 2] No such file or directory: 'ffmpeg'". Since we are using Mac, we don't really know how to solve this issue, so please refer to some online resources to solve this problem.  
 
 ## Usage  
-First, please make sure all users are using the same local area network (Since we have no money to rent a server 😭). The network creater may set CENTRAL_SERVER_IP in **centeral_server.py, server_discovery.py, server.py** to the IPv4 address of the creater's in central_server.py. Then, everybody including the creater may set CENTRAL_SERVER_IP in those three files to that IP address.  
+First, please make sure all users are using the same local area network (Since we have no money to rent a server😭). The network creater may set CENTRAL_SERVER_IP in **centeral_server.py, server_discovery.py, server.py** to the IPv4 address of the creater's in central_server.py. Then, everybody including the creater may set CENTRAL_SERVER_IP in those three files to that IP address.  
 
 ```run``` the file GUI.py. Enter a user name you like and you do not need to enter a password. Click on Login button. This step may be failed because of some unknown features of this framework PyQt5. If the program breaks after you do so, please run it again.  
 
@@ -39,3 +39,6 @@ Any of the user may create a room. After one user create a room, other users may
 
 For the Phase II usage datails, please refer to the Phase II file CSCI3280Group2ProjectReport.pdf. Phase I files CSCI3280Group2ProjectProgress.pdf and CSCI3280Group2ProjectDemo.mp4 may also be used.   
 Should you have any questions when using this program, please feel free to contact any of us.
+
+## Existing Bugs
+Voice calls may experience issues when more than two participants are in the same room. This could be due to socket data transfer limitations, and we are investigating a potential fix.😭
